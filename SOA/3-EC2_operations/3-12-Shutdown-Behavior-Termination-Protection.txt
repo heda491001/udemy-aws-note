@@ -1,0 +1,15 @@
+Shutdown-Behavior
+    使用命令行login到instance中，执行系统的shutdown命令时，
+        默认是停止实例
+        可以使用instance的shutdown-behavior设定，设定为直接终止实例
+
+Termination-protection
+    可以给instance设定终止保护
+    已设定保护的instance，不论是从aws console还是api call，试图终止都会弹出error
+    [注意]
+        如果上边的shutdown-behavior设定的是终止实例，
+        instance上使用shutdown命令还是能将实例终止
+            原因可能是shutdown时并不是调用的终止实例的api，
+            而是调用的initial shutdown behavior的命令
+
+        
