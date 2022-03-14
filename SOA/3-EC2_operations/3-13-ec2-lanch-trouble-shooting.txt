@@ -4,31 +4,31 @@
         说明已经达到了一个region能启动的on-demand和spot实例使用的vCPU数量上限
     [注意]
         1. vCPU数量的上限是按照Region计算的
-        2. 这里只计算on-demand和spot实例，预留实例并不计算在内
+        2. 这里只计算on-demand和spot实例, 预留实例并不计算在内
     [解决办法]
         1. 换一个region
         2. 联系aws客服给加region的上限
     [查看]
-        在ec2页面，左侧的list里找到Limits，点开可以查看当前vCPU的使用情况
+        在ec2页面, 左侧的list里找到Limits, 点开可以查看当前vCPU的使用情况
 
 异常 #InsufficientInstanceCapacity
     [原因]
         说明AWS在你指定的AZ已经没有足够的资源来启动实例了
     [注意]
-        这个error是AWS那边的问题，你没错
+        这个error是AWS那边的问题, 你没错
     [解决办法]
-        1. 可以等一会，说不定capacity就空出来了
-        2. 如果是一次性请求了多个实例，可以换成一个一个挨个请求
-        3. 可以考虑换个小一点的实例类型，之后在改成大的
+        1. 可以等一会, 说不定capacity就空出来了
+        2. 如果是一次性请求了多个实例, 可以换成一个一个挨个请求
+        3. 可以考虑换个小一点的实例类型, 之后在改成大的
         4. 换个AZ试试
 
 异常 #InstanceTerminateImmediately
     [原因]
-        直译过来就是实例启动了之后立刻就以为error终止了，原因有很多可能，主要是EBS的问题
+        直译过来就是实例启动了之后立刻就以为error终止了, 原因有很多可能, 主要是EBS的问题
         1. 达到了使用EBS总容量的上限
         2. 用于启动实例的EBS的snipshot损坏了
-        3. EBS的volume是KMS加密过的，但是当前启动实例的账户没有KMS解密的权限
-        4. instance使用了一个既存的AMI镜像，可能需要一些关键文件，但是你启动的时候漏掉了
+        3. EBS的volume是KMS加密过的, 但是当前启动实例的账户没有KMS解密的权限
+        4. instance使用了一个既存的AMI镜像, 可能需要一些关键文件, 但是你启动的时候漏掉了
     [解决办法]
         取EC2 console进一步查看启动的异常信息
 

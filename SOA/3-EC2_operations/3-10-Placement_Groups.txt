@@ -1,34 +1,34 @@
 概念
-    虽然部署instance的部署的时候无法指定到物理的服务器，
+    虽然部署instance的部署的时候无法指定到物理的服务器, 
     但是提供了3种部署策略来满足一些特别的需要
 
-    方式1 ：Cluster
+    方式1 : Cluster
         简言之就是所有的instance都部署到同一个机器上
         优点
             在instance之间可以提供极高的网络传输速度
             主要用在一些集群计算领域
         缺点
-            可用性比较低，都在一台机器上，出现问题全都完蛋
+            可用性比较低, 都在一台机器上, 出现问题全都完蛋
 
-    方式2：Spread
+    方式2: Spread
         尽可能多的物理host上分散
-            还有数量限制，最多只能选七个物理host来分散
+            还有数量限制, 最多只能选七个物理host来分散
         优点
-            可用性非常高，非常适合一些关键的服务
+            可用性非常高, 非常适合一些关键的服务
         缺点
             instance之间的通信就达不到cluster的速度
 
-    方式3：Partition
-        分成若干组，同一个组的放在同一个host上
+    方式3: Partition
+        分成若干组, 同一个组的放在同一个host上
         优点
             相当于上边两种的结合体
-        可以用来部署一些相互间有高依赖性的instance，但对可用性又有需求
+        可以用来部署一些相互间有高依赖性的instance, 但对可用性又有需求
 
 具体操作方法
-    在EC2的console界面，左侧列表找到Placement Group
+    在EC2的console界面, 左侧列表找到Placement Group
 
-    可以在其中创建新的group，选择group的类型
+    可以在其中创建新的group, 选择group的类型
     
-    然后在创建ec2的时，vpc选项那一页vpc的下边就会有选则placement group
+    然后在创建ec2的时, vpc选项那一页vpc的下边就会有选则placement group
         
     

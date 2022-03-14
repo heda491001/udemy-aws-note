@@ -1,0 +1,68 @@
+
+- 可以最大限度的节省实例的开支, 大概可以达到90%
+
+- 大概的工作原理
+    在提出一个spot请求时, 你需要自己定一个max prise
+    一旦, 当前的spot价格 < 你的max prise, 
+        就会按照当前的spot价格计费, 启动spot实例
+    但是一旦, 当前的spot价格 > 你的max prise
+        你可以选择[停止]或者[终止]实例
+            停止: 
+                可以保留现在的实例下次接着用
+                但是会因储存停止的实例, 发生费用
+            终止: 
+                清理掉所有的现场, 不会因剩余内容花钱
+                下次再启动时候就是一个全新的实例
+        AWS会给你2分钟时间来选择
+
+- Spot Block
+    ※ 服务停止
+        现在已经不支持新的Spot Block请求, 
+        已经提出的Spot block也只支持到2022/12/31
+    内容    
+        可以设定启动后, 1-6小时之内, 
+        请求的实例不会因价格变动而停止
+
+- Spot的两种request type
+    persistent request: 持续性的请求
+        这个请求会一直有效, 直到取消这个request
+        如果
+            spot价格比你的max prise高, 启动的实例都被停止了
+            然后spot价格又降下来了
+                你的实例就会从新启动
+    onetime request: 一次性请求
+        顾名思义, spot请求生效, 启动过一次之后, 就不再请求
+        上面相同的例子
+            spot价格比你的max prise高, 启动的实例都被停止了
+            然后spot价格又降下来了
+                你也不会再从新启动实例
+
+- 如何停止spot实例
+    先停止spot request, 再清理已启动的实例
+        停止spot请求并不会自动清理已启动的实例, 你需要手动清理
+        而且如果你使用的是persistent type, 不取消请求就停实例, 实例还会被重新启动
+  
+- Spot fleet: spot请求队列
+    一种更为只能的spot请求方式, 
+        可以理解为同时请求一系列的spot实例
+        ※ 原文档好几把长, 只摘一些大概的思想
+    请求时, 你需要定义
+        请求的类型:  和spot 请求一样, 你可以选择这两种, 意思也一样
+            one-time request 
+            maintain
+        一系列的 [pool] 
+            包括, instance type , OS (AMI image) , AZ
+            还可以设定权重capacityOptimizedPrioritized , 来设置优先级
+        总的数量max capabilities, 和总的价格max cost
+        选择适当 [策略]
+            lowestPrice : ( 默认策略 )
+                竞价型实例来自价格最低的池. 
+            diversified :
+                竞价型实例分布在所有池中. 
+            InstancePoolsToUseCount
+                竞价型实例分布在您指定数量的 Spot 池中. 此参数仅在与 lowestPrice 结合使用时有效. 
+            capacityOptimized :
+                尽可能的满足请求的实例数量capabilities的需求
+                可以根据上边说的权重, 尽可能优先使用所设定的实力类型
+
+                

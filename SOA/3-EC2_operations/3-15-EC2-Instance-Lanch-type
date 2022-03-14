@@ -1,0 +1,69 @@
+-- 简短的复习一下都有哪些Lanch  type --
+
+On-Demand Instance: 按需实例
+    短workload, 单价是最高的
+    随用随拿, 非常方便也是平时做实验的选项
+    按使用收钱
+        linux/windows直接精确到秒
+        其他系统 按小时收费
+    单价是最高的, 但是使用量以外绝对不会收取费用
+    并没有长期的保障
+    主要用于短期使用, 但是（相比spot实例）不想被打断
+        
+
+Reserved Instance: 预留实例
+    主要用于长workload使用, 需要预先声明自己要用多少实例
+        有两种选择, 使用1年或者3年
+    相比On-Demand, 可以节省很多, 最多可以节省75%
+        节省的程度跟一些选项有关
+            声明的使用时长
+                声明3年 > 声明1年
+            付款的选择
+                现在付清 > 现在付一部分, 之后付清 > 以后付款 
+    也有一些特殊的
+        Convertible Reserved Instance: 可变预留实例
+            可以变换使用的实例类型
+            最多能省54%
+        Scheduled Reserved Instance: 
+            并不是一直使用的, 比如: 每个星期需要用一天等等
+            你可以选择是 每周/月/年 使用多少
+            但是还是和普通的一样, 需要声明一个期为1年或者3年的计划
+
+
+Spot Instance: Spot实例
+    也是用与短workload, 也是最经济的
+        最高省90%
+    随时可能会被停止, 
+        一旦出价有人高过你就会停止
+        所以需要考虑执行的app内容
+            随时可以停止, 不在乎什么时候执行的
+            比如
+                batch job
+                Data Analysis
+                Image Processing
+                distributed workload: 
+                    如果一个server听了, 其他server也知道怎么做
+                workload with flexible start/end time
+        不太适合
+            关键性的, 需要持续提供服务的job
+            DB
+
+Dedicated Hosts: 
+    直接要求一个独立机器, 只供自己使用
+        在这台物理host可以有所有的ec2功能
+    至少以3年为单位声明使用量
+    单价和On-Demand一样
+    可以使用
+    主要用途
+        客户规定或法律要求, 必须使用一台独立的物理机器
+        使用的一些软件的license比较麻烦, 是对物理机器进行认证是使用的
+
+Dedicated Instance: 
+    你的instance会放在一个固定的host上
+    但是这个host是和别人共用的
+    而且和Dedicated Hosts相比
+        需要和别人共享host
+        Dedicated hosts还可以提供很多host的物理情报, 而Dedicated Instance却没有
+
+    
+    

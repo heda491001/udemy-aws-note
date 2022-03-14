@@ -1,31 +1,31 @@
 ssh可能会遇到的问题
     "Unprotected private key file"
         [原因]
-            本地使用的linux系统，使用的密钥的权限没有设置成400
+            本地使用的linux系统, 使用的密钥的权限没有设置成400
     "Host key not found" 
     或者 "Permission dinied" 
     或者 "Connection closed by [instance] port 22"
         [原因]
             连接instance用的username不对
                 比如
-                    AmazonLinux的username是：ec2-user
-                    ubuntu的username是：ubuntu
+                    AmazonLinux的username是: ec2-user
+                    ubuntu的username是: ubuntu
     "Connection time out"
         [原因]
-            一般来是EC2的网络的设定没设好，具体有很多可能
+            一般来是EC2的网络的设定没设好, 具体有很多可能
             1. 安全组没有给权限
             2. 子网的ACL设定没给权限
             3. 子网的路由策略不对（比如从Internet访问的化需要有到互联网GW的设定）
             4. 实例没有公有的ipv4地址
             
-            还有一种可能，就是实例的CPU负荷太高，真的timeout了
+            还有一种可能, 就是实例的CPU负荷太高, 真的timeout了
 
 
 [SSH] VS. [EC2 Instance Connect]
     SSH
-        就是传统的管理五服务器的方式，自己创建密钥，确保你能访问实例的22端口
+        就是传统的管理五服务器的方式, 自己创建密钥, 确保你能访问实例的22端口
     EC2 Instance Connect
-        AWS提供的一种新的服务，可以在网页上有简易的命令行工具来访问指定的实例
-            在后边其实是给对象instance临时放了个ssh密钥，然后用这个密钥访问，该密钥有效时间60s
-        收集ssh还是一样的，也需要确保网络设定的畅通
+        AWS提供的一种新的服务, 可以在网页上有简易的命令行工具来访问指定的实例
+            在后边其实是给对象instance临时放了个ssh密钥, 然后用这个密钥访问, 该密钥有效时间60s
+        收集ssh还是一样的, 也需要确保网络设定的畅通
     
