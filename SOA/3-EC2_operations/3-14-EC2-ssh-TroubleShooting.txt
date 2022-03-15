@@ -27,5 +27,7 @@ ssh可能会遇到的问题
     EC2 Instance Connect
         AWS提供的一种新的服务, 可以在网页上有简易的命令行工具来访问指定的实例
             在后边其实是给对象instance临时放了个ssh密钥, 然后用这个密钥访问, 该密钥有效时间60s
-        收集ssh还是一样的, 也需要确保网络设定的畅通
+        实际的ssh并不是从你的机器连的，而是从一个EC2_INSTANCE_CONNECT过去的
+            所以你需要确保实例能从这个EC2_INSTANCE_CONNECT访问
+                详情需要查阅aws文档，每一个region都不太一样
     
