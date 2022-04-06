@@ -1,0 +1,48 @@
+Burstable instance (T2/T3)
+
+文档
+    https://docs.aws.amazon.com/zh_cn/AWSEC2/latest/UserGuide/burstable-performance-instances.html
+
+    概要
+        可以临时提升性能的实例类型
+        ※ 或者应该说是平时并不全负荷工作
+            只在burst之后才full power
+
+        包括t2/t3系列
+            ※  t2正是aws给一年的免费试用的实例类型
+                感觉还挺合理的
+                成本上
+                    因为T系列相当于是大家share算力, 所以是用的人越多对于AWS来说越稳定/划算
+                体验上
+                    可以临时提高性能, 在boot新实例的时候可以更快, 感觉上启动更快
+                ※以上均未验证
+
+    Burst : 临时提供性能
+        平时正常运转, 积累burst credit
+        
+        当实例遇到了运算压力, 实例就会自动的开启burst模式
+            大幅度的临时提升性能
+            实例开始burst之后, 会消耗burst credit
+        
+        如果你的burst credit全部消耗完了
+            即使运行压力非常大, 实例会一直运行在低性能状态, 以此来积累burst credit
+            credit用完了是没办法直接请求的
+                几种对策
+                    1. 换个更大的实例类型
+                    2. 开启unlimited模式
+                    3. 直接不用t系列了
+    
+    T系列下边的不同型号能burst的程度也是不同的
+        比如 :
+            t2.nano
+                虽然在选择的时候显示是1个vCPU
+                但实际上, 正常运转时只有全部性能的5%
+        详情查看文档
+            <赢取 CPU 积分>
+            https://docs.aws.amazon.com/zh_cn/AWSEC2/latest/UserGuide/burstable-credits-baseline-concepts.html
+
+    无限模式 - unlimited
+        简言之, 
+            和普通的基本一样, 
+            但是没credit用完了就花钱, 而不是进入低性能模式
+        注意: 这个开启之后可能会非常花钱

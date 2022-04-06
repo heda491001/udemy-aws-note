@@ -1,0 +1,33 @@
+Elastic IPs
+    文档
+        https://docs.aws.amazon.com/zh_cn/zh_cn/AWSEC2/latest/UserGuide/elastic-ip-addresses-eip.html
+   
+    overview
+        # 在aws上stop/terminate实例时, 实例的ip地址会发生变化
+        EIP是静态 IPv4 地址。
+        EIP地址会分配 AWS 账户, 并且在您释放它之前一直属于自己
+        EIP地址是公有 IPv4 地址
+        可以分配EIP给 一个 实例 , 之后还可以将EIP重新分配给别的实例
+        如果EIP分配给实例, 就不会收费
+            只有占着EIP不用的时候才收
+   
+    point
+        通过EIP, 我们可以实现一部分的fail-over的功能
+        默认, 同一个aws账户只能有5个EIP
+            可以跟AWS申请增加数量
+        ※ 正因为上边的限制
+        尽可能的不去使用EIP, 有很多可以替代的选项
+            DNS来指向实例的公有IP
+            使用Elastic-Load-Balancer (可能这是最好的选项)
+                一样可以提供固定的访问地址
+                    重启实例也不受影响, ELB会直接根据实例的ARN来找地址
+                实现fail-over也很容易
+
+                    
+
+            
+
+            
+
+
+    
