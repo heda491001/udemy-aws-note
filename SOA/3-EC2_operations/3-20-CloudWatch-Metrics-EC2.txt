@@ -1,0 +1,45 @@
+--- CloudWatch Metrics 4 EC2 ---
+文档 (index) 
+    https://docs.aws.amazon.com/zh_cn/cloudwatch/index.html
+
+# 基本的概念不赘述了，AWS提供的监控服务
+
+AWS提供的metrics
+    两种模式, 监控采样的频率不同
+        Basic Monitoring(默认) : 基础款, 5分钟跟新一次数据
+        Detail Monitoring : (要加钱) , 1分种刷一次 
+    监控内容
+        CPU / Network / Disk / status check
+        具体来说
+            CPU : 
+                CPU使用情况 + Credit使用情况
+                    CPU Credit可以参见之前讲的Burstable EC2
+            Network : 
+                网络的 in / out 流量情况
+            Status Check :
+                Instance Status : 实例运行情况
+                System Status : aws的硬件host的情况
+                    # 感觉system这个有点容易理解错
+                    # 指的是aws的系统情况, 也就是实际跑vm的硬件host
+                    # 而不是我们在instance上跑的ami镜像系统
+        注意
+            AWS提供的监控并不包含RAM
+
+自定义Metric : 
+    需要我们自己配置的
+    也分两种采样模式
+        Basic Resolution : 1min一次
+        High Resolution : 最快可以 1s 一次
+            # 当然就贵
+    监控对象
+        RAM / App的运行状况 等
+        再前调一遍
+            RAM的状况只有自定义的才能监控
+            AWS提供的metrics并不包含RAM
+    权限设定
+        注意使用自定义Metric需要给ec2实例附加访问CloudWatch的IAM权限
+
+
+        
+        
+

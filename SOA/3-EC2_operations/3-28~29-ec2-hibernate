@@ -1,8 +1,0 @@
-实例休眠 - EC2 hibernate 
-    文档
-        https://docs.aws.amazon.com/zh_cn/zh_cn/AWSEC2/latest/UserGuide/Hibernate.html
-    
-    stop / terminate - instance
-        stop - 停止实例
-            保留在EBS卷里的东西不变
-        

@@ -1,0 +1,44 @@
+--- Status Check ---
+
+ec2 instance的运行状况检查
+    包括硬件host和软件
+
+System Status check 
+    这里的system指的是aws的系统
+    # 基本上就可以理解为硬件问题
+        比如
+            aws的host出现了物理的问题, 断电了之类的
+    注意
+        不是指instance上系统的运行system的运行情况
+    检查到问题时的解决方法:
+        stop/start instance
+            (因为一般来讲, 如果host不可用了, 重启实例就会另外在别的可用的host上启动)
+
+Instance Status Checks
+    这个指的才是我们自己的instance的运行状况
+        比如
+            Network 设定问题
+            内存溢出
+    检查到问题时解决方法:
+        Reboot instance
+        更改系统设定
+    
+CloudWatch 可以检测的指标 (1min一次)
+    StatusCheckFailed_System
+    StatusCheckFailed_Instance
+    StatusCheckFailed (for both)
+    # 这个值肯定不是0就是1
+      但是也有可能看到小数点
+          算的是个平均数
+
+自动Recovery
+    Option 1: CloudWatch Alarm
+        设定Alarm触发指定的recover动作(比如重启)
+        可以保持原有的ip, EIP不变
+        同时可以发送信息到SNS        
+    Option 2: Auto Scaling Group
+        直接将instance设置成一个target Group下边就行
+            指定好对应的instance数量
+        很简单直接, 就是全自动了不能像上边这样还保存原来的ip, EIP
+
+

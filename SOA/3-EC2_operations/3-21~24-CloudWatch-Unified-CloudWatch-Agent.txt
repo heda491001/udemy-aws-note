@@ -1,0 +1,49 @@
+--- Unified CloudWatch Agent ---
+
+# 备注
+    其实Cloudwatch不光是前边前边说的监控ec2的运行状况
+    还有很多很多其他的功能
+        比如, 几乎所有的aws service的log都会发到这里
+    甚至可以用来监视on-permise的server
+        这时需要在server上装一个agent用来给cloudwatch发送数据
+        原先发送log, 进行监控等等的agent都是独立的
+        后来全都放到一个包里了, 也就是这里说的<Unified CloudWatch Agent>
+
+
+概要
+    可以装在ec2, 甚至是自己的 on-permise的server
+    可以收集服务器的系统运行状况, 发给CloudWatch进行监控
+        比如 RAM / 进程运行状况 / 硬盘用量  , 等等
+    可以收集系统生成的log来发送给CloudWatch来进行统一管理
+        反过来说
+            如果你不用这个CloudWatchAgent, 
+            将不会又任何的log从ec2内发送到cloudwatc
+    CloudWatchAgent的相关设置
+        可以保存在一个ec2上的文件里
+        亦可使用aws的SSM Parameter Store服务
+            使用时候需要注意给你的EC2的role足够的权限
+                如果你是初次保存, 可以能要SSM的push权限
+                如果只是在这个ec2上使用, 只需要get权限
+    发送到CloudWacth后的默认的namespace是CWAgent
+        之后也可以修改设置成别的
+
+Procstat Plugin
+    收集/监控系统上的进程(Process)
+    支持linux和widows系统
+    监控内容比如
+        该进程占用了多少的cpu, 占用了多少内存等等
+    指定进程的方式
+        pid_file: (linux)
+            监控指定的pid文件
+        exe: (windows?)
+            监控指定的进程名字 - 支持正则表达式
+        pattern:
+            监控指定 command line - 支持正则表达式
+    发送到cloudwatch的指标名字都带又procstat前准        
+        例如
+            procstat_cpu_time, procstat_cpu_usage 等等
+
+
+        
+    
+

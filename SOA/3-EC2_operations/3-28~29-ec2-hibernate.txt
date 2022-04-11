@@ -1,0 +1,47 @@
+ --- 实例休眠 EC2 hibernate  ---
+文档
+    https://docs.aws.amazon.com/zh_cn/zh_cn/AWSEC2/latest/UserGuide/Hibernate.html
+
+# 背景 stop / terminate - instance
+    stop - 停止实例
+        保留在EBS卷里的东西不变
+        但是ram里的东西就跟着CPU没了
+    terminate - 终止实例
+        彻底删除, EBS也不留
+
+# 原理简介
+    与stop不同
+    休眠hibernate时AWS会将ram的内容全部dump到ebs卷里
+    然后从休眠中启动时候再恢复到ram里边
+
+好处
+    再次启动时将会保存所有内存和进程
+    系统的启动也会更快
+        因为你实际上并没有重启的boot系统, 而是从内存恢复的
+
+使用场景
+    需要长时间执行的的process
+    需要临时保存ram的状态
+    需要快速的启动服务
+
+注意
+    实例类型
+        支持以下几种
+            c3 c4 c5
+            m3 m4 m5
+            r3 r4 r5
+        使用的内存必须小于150G
+        不支持bare metal instance 裸机实例
+    AMI 
+        好像没什么要求
+        AmazonLinux2, Linux AMI , Ubuntu
+        windows
+        好像不支持mac
+    ebs
+        卷必须是加密的
+        不能是instance store 
+        需要足够大(来备份ram的内容)
+    对于on-demand和Reserved都支持
+    最多只能休眠60天
+    
+
