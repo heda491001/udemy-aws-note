@@ -2,7 +2,7 @@
 文档 (index) 
     https://docs.aws.amazon.com/zh_cn/cloudwatch/index.html
 
-# 基本的概念不赘述了，AWS提供的监控服务
+# 基本的概念不赘述了, AWS提供的监控服务
 
 AWS提供的metrics
     两种模式, 监控采样的频率不同

@@ -1,12 +1,15 @@
 从实例制作ami
-    option 1:
-        右键实例 -> image and template -> create image
-    
+    option 1:  从现有的实例制作ami镜像
+        操作
+            右键实例 -> image and template -> create image
+    option 2:  使用EC2 Image Builder(后边4-35的内容)
+
+
 制作好之后在启动实例的时候就可以在ami的选项时找到my ami
     使用自己的ami和使用aws提供的没有区别
 
 
 
 问题？
-    制作ami的时候，是只保存了EBS的情况么
-    还是想hibernate一样，关机前保留了ram里的所有内容，所以应该有一摸一样的进程
+    制作ami的时候, 是只保存了EBS的情况么
+    还是想hibernate一样, 关机前保留了ram里的所有内容, 所以应该有一摸一样的进程

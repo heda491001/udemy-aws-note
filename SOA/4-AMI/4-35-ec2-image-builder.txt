@@ -1,0 +1,24 @@
+--- EC2 Image Builder ---
+
+文档
+    https://docs.aws.amazon.com/imagebuilder/
+
+
+主要功能
+    aws提供的服务用来自定义ami镜像的工具, 也可以做container镜像
+        #  定义的docker用的dockerfile的思维还真有点类似
+    整体的工具相当于是一个pipeline的模式, 流程为
+        - ec2 image builder启动一个ec2实例
+        - 根据预先的定义对启动的实例进行操作
+            比如, 安装软件等等
+        - 从刚才的实例制作ami
+        - 用ami再启动一个新的ec2实例
+        - 对实例进行测试
+            这里的test case可以自定义的
+        - 完成
+            制作完成的ami可以发送到多个region
+    可以设定schedule, 定期的进行ami制作(bkup进行)
+    pipeline服务本身是不收费的, 但是其他resource费用肯定还是要的
+
+
+

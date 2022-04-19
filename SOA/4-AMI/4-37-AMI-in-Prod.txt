@@ -1,0 +1,22 @@
+
+简单补充两个在生产环境中的ami应用
+  1.我们可以通过ami的tag和IAM的权限设定
+    来规定用户必须使用指定的ami来启动ec2实例
+        比如：
+        下边这样用户就只能用有以下tag的ami来启动实例
+            "Environment": "Prod"
+------------------------------------------------------------
+        {  
+            …
+            "Condition": {
+                "StringEquals": {
+                    "ec2:ResourceTag/Environment": "Prod"
+                }
+            }
+        }
+------------------------------------------------------------
+  2.通过跟AWS Config结合
+    可以ec2是否使用了允许的ami
+        AWS Config的文档
+            https://docs.aws.amazon.com/zh_cn/config/index.html#lang/en_us
+        基本上也就是根据ami设定的tag进行筛选

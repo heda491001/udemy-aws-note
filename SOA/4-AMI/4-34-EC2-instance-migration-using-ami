@@ -1,0 +1,18 @@
+ec2 instance migration
+    如果想将实例从移动到另一个AZ
+        直接做一个ami的备份, 然后在在另一个az中启动就行了
+    如果想将实例移动到另一个region
+        # 稍微麻烦一点, 因为ami每一个region是各自保存的
+        - 制作AMI
+        - 将AMI复制到另一个region
+        - 在新的region启动实例    
+    
+Cross-Account AMI Sharing
+    你是可以给另一个aws account分享自己的ami的
+    只是分享并不会影响到ami的所有权
+        相当于给了一个read的权限
+    EBS的加密要求
+        - 要么不加密
+        - 要么用KMS(CMK)加密
+            同时必须给对方分享CMK来解密
+            # 也就是说加密不能使用默认的aws/ebs密钥来进行加密

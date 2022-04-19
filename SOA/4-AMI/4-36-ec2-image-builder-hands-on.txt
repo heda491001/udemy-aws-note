@@ -1,0 +1,13 @@
+--- point ---
+我们需要给ec2-image-builder足够的权限
+    界面上也会有提示, 需要三个police
+        - EC2InstanceProfileForImageBuilder
+        - EC2InstanceProfileForImageBuilderECRContainerBuilds 
+        - AmazonSSMManagedInstanceCore
+    默认role名
+        EC2InstanceProfileForImageBuilder
+
+执行我们的pipeline之后, 也可以在ec2的管理界面上看到pipeline创建的image
+    会有两个, 一个create, 一个test
+    这两个实例都会在pipeline执行结束后自动terminate
+
