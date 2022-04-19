@@ -1,1 +1,70 @@
 --- AMI ---
+
+AMI = Amazon Machine Image
+
+使再AWS上执行实例时使用的镜像文件
+
+通过AMI可以给实例进行一些定制化
+    比如
+        可以预装软件
+        进行系统的设定配置
+        启动一些监视等等
+
+正因为这些预装的定制化, 所以可以再boot实例时更省事, 更快速
+    
+AWS的AMI文件是跟着region走的, 每个region都有一份, 并不是一个global service
+    自定义的AMI可以跨region拷贝
+
+AMI的来源
+    AWS官方
+        官方提供的, 启动instance时候看到的首选项
+    社区 - AWS Marketplace AMI
+        别人做的在社区里共享的
+        可以通过market购买的那几个
+    私人
+        AWS上自己保存的
+
+制作AMI
+    option 1 :
+        使用ec2-image-builder
+        在之后的4-35节进行介绍    
+    option 2 :
+        从现有的ec2 instance制作
+        步骤
+            - 启动一个实例
+            - 进行自定义的设定安装等等
+            - ※(可选)停止实例    
+                # 之后详述
+                # 但是为了保证数据的完整性最好还是把instance给stop
+            - 创建AMI
+                aws的console就可以很容易找到
+            
+            这样就得到了一个镜像(或者说备份), 
+            之后就可以使用这个进项再启动相同实例
+    
+No-Reboot option
+    在实例创建镜像的时候的一个选项
+        就叫 [无重启]
+    实际上创建AMI镜像, 主要就是给使用的EBS卷做一个snapshot
+        不启用 No-Reboot
+            自动stop实例, 然后对实例的ebs卷创建snapshot, 制作ami
+        启用 No-Reboot
+            在ec2实例执行的状况下, 对ebs做snapshot
+    影响
+        对执行中的实例影响较小
+        但是无法保证ebs卷上的数据的完整性/一致性 等
+
+AWS Backup Plans
+    aws提供的一个备份服务
+    文档
+        https://docs.aws.amazon.com/aws-backup/index.html
+    使用这个可以对ec2实例进行定期备份, 也就是制作ami镜像
+    
+    aws backup这个服务在创建的时候默认的就是使用no-reboot模式
+        # 大概看了下选项和设置好像还没法修改
+
+    如果想定期的reboot模式制作ami, 可以参考下边的方法
+        - 做一个EventBridge的rule
+        - 用EventBridge来定期触发一个Lambda function
+        - 让这个lambda function使用reboot模式来制作ami镜像
+
