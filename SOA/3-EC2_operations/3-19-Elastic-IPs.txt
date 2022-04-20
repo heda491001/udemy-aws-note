@@ -4,7 +4,7 @@ Elastic IPs
    
     overview
         # 在aws上stop/terminate实例时, 实例的ip地址会发生变化
-        EIP是静态 IPv4 地址。
+        EIP是静态 IPv4 地址. 
         EIP地址会分配 AWS 账户, 并且在您释放它之前一直属于自己
         EIP地址是公有 IPv4 地址
         可以分配EIP给 一个 实例 , 之后还可以将EIP重新分配给别的实例

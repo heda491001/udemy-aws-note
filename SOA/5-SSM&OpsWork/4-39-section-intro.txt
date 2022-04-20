@@ -1,0 +1,11 @@
+这一章主要就是讲两个服务
+    SSM - AWS Systems Manager
+    Opswrok
+
+内容
+    how to manage fleet of ec2 instance and on-permise servers
+    how to apply patches at scale
+    how to run automations
+    store parameters
+
+    usage of Chef and Puppet

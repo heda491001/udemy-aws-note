@@ -1,0 +1,29 @@
+
+
+--- 简单的hands-On ----
+
+从左边的队列管理器(fleet-manager)开始
+
+会显示所有已经托管在SSM上的节点(比如ec2实例)
+    当然一开始肯定没有
+
+接下来从ec2控制台启动几个ec2实例
+    这里需要注意给ec2添加一个角色, 并使其有足够权限
+        选择新建role
+        添加permission polices
+        选择ec2 polices
+        检索SSM
+        选择AmazonEC2RoleforSSM
+        名字无所谓, 直接用AmazonEC2RoleforSSM就行
+    安全组可以新建一个
+        # 这里可以将SSH的access从安全组拿掉
+    点击启动
+
+这时在回到SSM队列控制器
+    发现刚才启动的ec2实例已经自动的显示在这里
+        会显示当前的操作系统和ssm-agent版本
+        
+    
+
+            
+

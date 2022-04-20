@@ -1,0 +1,36 @@
+AWS Tags
+    You can add text key-value pairs called Tags to many AWS resources
+    Commonly used in EC2
+    Free naming, common tags are Name, Environment, Team …
+    They’re used for
+        Resource grouping
+        Automation
+        Cost allocation
+    Better to have too many tags than too few!
+
+
+Resource Groups
+    Create, view or manage logical group of resources thanks to tags
+    Allows creation of logical groups of resources such as
+        Applications
+            比方可以规定一个叫app的tag, 来表示资源属于哪一个App
+        Different layers of an application stack
+        Production versus development environments
+            比方可以规定一个叫env的tag, 表是属于那个环境; Dev, test, Prod ....
+    Regional service
+    Works with EC2, S3, DynamoDB, Lambda, etc
+
+
+hands-on
+    tag
+        就不多说了, 都吃过见过了
+        基本在所有服务的管理界面, 选择都可以进行tag的编辑
+    Resource-Group
+        控制台
+            https://ap-northeast-1.console.aws.amazon.com/resource-groups/home?region=ap-northeast-1
+            # 这个玩意并不属于SSM的一部分
+        创建步骤也并不难, 很好理解
+            资源可以选可以不选, 不选就是默认所有种类的资源
+        # 其实是相当于对多个tag进行了一下整合的成一个资源组名的感觉
+        
+    

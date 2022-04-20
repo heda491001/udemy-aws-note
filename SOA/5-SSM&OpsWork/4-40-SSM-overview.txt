@@ -1,0 +1,55 @@
+
+docs
+    https://docs.aws.amazon.com/zh_cn/systems-manager/latest/userguide/what-is-systems-manager.html
+
+Overview
+    Helps you manage your EC2 and On-Premises systems at scale
+    Get operational insights about the state of your infrastructure
+    Easily detect problems
+    Patching automation for enhanced compliance
+        可以自动化的合规性
+    Works for both Windows and Linux OS
+    Integrated with CloudWatch metrics / dashboards
+    Integrated with AWS Config
+    Free service
+
+
+Feature
+  * Resource Groups
+    Operations Management       :: 运营管理
+        Explorer
+        OpsCenter
+        CloudWatch Dashboard    :: CloudWatch 控制面板
+        PHD
+        Incident Manager        :: 事件管理器新建
+    Change Management           :: 更改管理
+        Change Manager              :: 更改管理器
+     *  Automation                  :: 自动化
+        Change Calendar             :: 更改日历
+     *  Maintenance Windows         :: 维护时段
+    Application Management      :: 应用程序管理
+        Application Manager         :: 应用程序管理器
+        AppConfig
+     *  Parameter Store
+    Node Management             :: 节点管理
+        Fleet Manager               :: 队列管理器
+        Compliance                  :: 合规性
+     *  Inventory                   :: 库存
+        Hybrid Activations          :: 混合激活
+     *  Session Manager             :: 会话管理器
+     *  Run Command                 :: 运行命令
+     *  State Manager               :: 状态管理器
+     *  Patch Manager               :: 补丁管理器
+        Distributer                 :: 经销商
+    Shared Resources            :: 已共享的资源
+     *  Documents                   :: 文档
+
+    以上是是SSM的所有功能, 考试并不会用到所有
+        考试重点是标 * 的部分, 也会重点学习
+        
+
+How Systems Manager works
+    We need to install the SSM-agent onto the systems we control
+    Installed by default on Amazon Linux 2 AMI & some Ubuntu AMI
+    If an instance can’t be controlled with SSM, it’s probably an issue with the SSM agent!
+    Make sure the EC2 instances have a proper IAM role to allow SSM actions

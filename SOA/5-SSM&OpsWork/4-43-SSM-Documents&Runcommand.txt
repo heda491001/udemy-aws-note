@@ -1,0 +1,26 @@
+SSM – Documents
+    Documents can be in JSON or YAML 
+    You define parameters 
+    You define actions 
+    Many documents already exist in AWS
+    Example : 
+    --------------------------------
+    schemaVersion:'2.2
+    description: state Manager Bootstrap Example parameters: {} mainsteps:
+        - action:aws:runShellScript
+            name: configureServer 
+            inputs:
+                runCommand:
+                    - sudo yum install -y httpd
+                    - sudo yum --enablerepo=epel install -yclamav
+    ----------------------------------
+
+SSM – Run Command
+    Execute a document (= script) or just run a command
+    Run command across multiple instances (using resource groups)
+    Rate Control / Error Control
+    Integrated with IAM & CloudTrail
+    No need for SSH
+    Command Output can be shown in the Console, sent to S3 bucket or CloudWatch Logs
+    Send notifications to SNS about command statues (In progress, Success, Failed, …)
+    Can be invoked using EventBridge
