@@ -1,6 +1,6 @@
 # udemy-aws-note
 
-just a note of the udemy aws class, including 
+just a note for my udemy aws class, including 
 
 SAA
 
