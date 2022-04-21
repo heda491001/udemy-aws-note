@@ -1,0 +1,16 @@
+
+point
+    如果ALB使用了依照path的Routing，
+    那么target group收到的请求应该也是处理带path的
+        比如
+            有target group
+                target group 1 : 
+                    instance1  - 10.0.0.3
+                target group 2 : 
+                    instance2  - 10.0.0.4
+            现在规定了
+                example.com/users ->  target group 1
+                example.com/posts ->  target group 2
+            那么如果访问 example.com/users, 
+                ALB会将请求发送给10.0.0.3/users
+                
