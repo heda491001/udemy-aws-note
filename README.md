@@ -5,7 +5,7 @@ just a note for my udemy aws class, including
 SAA
 
 DVA
-  
+  https://www.udemy.com/course/aws-certified-developer-associate-dva-c01/
 SOA
   https://www.udemy.com/course/ultimate-aws-certified-sysops-administrator-associate/
   
