@@ -1,0 +1,89 @@
+
+
+SSM – Parameter Store
+    Secure storage for configuration and secrets
+    Optional Seamless Encryption using KMS
+    Serverless, scalable, durable, easy SDK
+    Version tracking of configurations / secrets
+    Configuration management using path & IAM
+    Notifications with CloudWatch Events
+    Integration with CloudFormation
+
+
+SSM Parameter Store Hierarchy(阶层)
+    /my-department/
+        my-app/
+            dev/                 传递参数
+                db-url        ------------>   dev Lambda Func 
+                db-password   ------------>   dev Lambda Func 
+            prod/
+                db-url        ------------>   prod Lambda Func 
+                db-password   ------------>   prod Lambda Func 
+        other-app/
+    /other-department/
+    /aws/reference/secretsmanager/secret_ID_in_Secrets_Manager
+    /aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2
+
+
+
+
+Standard and Advanced Parameter Tiers
+---------------------------------------------------------------
+                  | Standard        | Advanced
+---------------------------------------------------------------
+可保存的param数    |  10,000         |  10,000
+(每个账户&region)  |                 |
+---------------------------------------------------------------
+每个param的大小    |  4KB            |  8KB
+---------------------------------------------------------------
+param polices     |  不支持          |  支持
+---------------------------------------------------------------
+服务的费用         |  免费            |  需要另外充值
+---------------------------------------------------------------
+param存储费用      |  免费            |  每个param $0.05/month
+---------------------------------------------------------------
+API 调用的费用     | 标准吞吐量: 免费  |  标准吞吐和高吞吐量模式都是
+最高throughput可达 | 高吞吐: 调用API   | $0.05 /10,000次调用API
+1000 trans/sec    |  $0.05 /10,000次  |
+
+parameter Polices
+    Allow to assign a TTL to a parameter (expiration date) 
+        to force updateing 
+        or deleting sensitive data such as password
+    Can assign multiple polices at a time
+    Example:
+        expiration(to delete a parameter)
+            到期自动失效
+            ------------------------------------------------
+            {
+                "Type":"Expiration"
+                "Version":"1.0"
+                "Attributes":{
+                    "Timestamp":"2022-04-20-T00:00:00.000z"
+                }
+            }
+            ------------------------------------------------
+        ExpirationNotification(CW Events)
+        到期前15天发送消息给CW Events
+            ------------------------------------------------    
+            {
+                "Type":"ExpirationNotification"
+                "Version":"1.0"
+                "Attributes":{
+                    "Before":"15"
+                    "Unit":"Days"
+                }
+            }
+            ------------------------------------------------
+        NoChangeNotification(CW Events)
+        若20天没有变更则触发CW Event
+            ------------------------------------------------    
+            {
+                "Type":"NoChangeNotification"
+                "Version":"1.0"
+                "Attributes":{
+                    "After":"20"
+                    "Unit":"Days"
+                }
+            }
+            ------------------------------------------------

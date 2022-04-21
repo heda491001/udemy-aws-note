@@ -1,0 +1,62 @@
+SSM – Inventory 库存
+    用从node上收集meta-data的服务
+    这里的meta-data包括
+        已安装的software列表
+        OS driver - 系统驱动
+        各种系统设定, update
+        启动中的service
+        etc.....
+    可以在console查看meta-data，或是发送到s3储存
+        或者可以直接使用Athena来进行快速分析
+    meta-data的收集频率可以自定以
+        min，hours，days
+    可对多个AWS Account和region进行收集
+    也可以自定以想要收及的meta-data    
+
+
+
+SSM – State Manager 状态管理器
+#说明有点绕
+    功能: 自动对实例执行一些操作，使其维持某些状态
+    Use cases: 
+        自动启动instance上的某些软件
+            比如无论如何也要保持我的tomcat是启动的
+        定期的对software/os执行patch，
+            让其能保持在比较最新的状态
+    State Manager Association
+        # 相当于State Manager的每个单元
+        定义想要维持的某种state
+            Example: 
+                - port 22 必须关闭
+                - 杀毒软件必须安装
+        确定一个schedule来定期的执行/确认上边的state
+    可以使用 SSM Documents 来创建一个 Association
+
+
+
+quick-hands-On
+    从ssm的console左边列表，进入inventory
+    首先要启用inventory，默认是不启动的
+    点击快速启动
+        这时会跳到SSM的State Manager下的一个detail画面
+        state名叫AWS-GatherSoftwareInventory
+            创建了一个state association来收集meta-data
+        等到state都执行完了
+    在inventory的界面就可以查看各种的meta信息了
+    
+    # 接下来是将meta-data发送到s3保存
+    点击右上的资源数据同步(resource data sync)
+    点击创建数据同步
+    数据各种信息
+        同步名
+        对象s3 bucket
+        等等
+    这样数据就会发送到s3-bucket了
+    # 注意
+        你当然需要创建一个s3-bucket来收集数据
+        bucket policy也需要设置
+            参考
+                https://docs.aws.amazon.com/zh_cn/systems-manager/latest/userguide/sysman-inventory-datasync.html
+
+    
+    

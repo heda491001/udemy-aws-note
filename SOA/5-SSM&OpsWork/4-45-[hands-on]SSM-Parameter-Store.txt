@@ -1,0 +1,16 @@
+
+
+
+command memo
+
+从SSM获取param
+aws ssm get-parameters [parameter-name]
+
+对于已加密的param, 可以使用--with-decryption
+aws ssm get-parameters [parameter-name]  --with-decryption
+
+对于同一个path下, 可以使用--path参数
+aws ssm get-parameters --path [path-name]
+
+可以使用--path参数再加上--recursive, 可以递归的查看所有params
+aws ssm get-parameters --path [path-name] --recursive

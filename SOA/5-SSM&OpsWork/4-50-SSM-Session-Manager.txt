@@ -1,0 +1,20 @@
+
+Allows you 
+    to start a secure shell on your EC2 and on-premises servers
+    Access through AWS Console, AWS CLI, or Session Manager SDK
+    Does not need SSH access, bastion hosts, or SSH keys
+    * Access control will based-on IAM premission
+
+Supports Linux, macOS, and Windows
+
+Log connections to your instances and executed commands
+    log data can be sent to S3 or CloudWatch Logs
+
+CloudTrail can intercept StartSession events
+
+IAM Permissions setting
+    Control which users/groups can access Session Manager and which instances
+    Use tags to restrict access to only specific EC2 instances
+    Access SSM + write to S3 + write to CloudWatch
+
+Optionally, you can restrict commands a user can run in a session

@@ -3,6 +3,9 @@ SSM – Documents
     You define parameters 
     You define actions 
     Many documents already exist in AWS
+        你也可以拥有自己的docs
+        # 有点像ami和policy那个意思
+
     Example : 
     --------------------------------
     schemaVersion:'2.2
@@ -18,9 +21,21 @@ SSM – Documents
 SSM – Run Command
     Execute a document (= script) or just run a command
     Run command across multiple instances (using resource groups)
+        三种方式
+            - 特定的tag
+            - 手动指定intance
+            - 指定resource group
     Rate Control / Error Control
+        Conocurrency 
+            同时执行task的target数量
+            可以选择 targets的数量, 或是一定的percentage
+        Error threshold
+            当出error的target数超过某个值, 停止整个进程
+            一样, 可以选择 targets的数量, 或是一定的percentage
     Integrated with IAM & CloudTrail
     No need for SSH
-    Command Output can be shown in the Console, sent to S3 bucket or CloudWatch Logs
-    Send notifications to SNS about command statues (In progress, Success, Failed, …)
-    Can be invoked using EventBridge
+        # 这就是4-41的hands-on把ssh从sg去掉的原因, Run Command不需要
+    执行结果/log可以直接在console查看, 或是发送到s3或者cloudwatch
+        # console的执行log显示有点限制, 最多48000个字符
+    执行的status(In progress, Success, Failed, …)可以发送到指定的SNS
+    (除了手动执行)也可以通过EventBridge触发
