@@ -1,0 +1,14 @@
+
+连接耗尽
+
+Feature naming
+    Connection Draining – for CLB
+        https://docs.aws.amazon.com/elasticloadbalancing/latest/classic/config-conn-drain.html
+    Deregistration Delay – for ALB & NLB
+        https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-target-groups.html#deregistration-delay
+
+Time to complete “in-flight requests” while the instance is de-registering or unhealthy
+Stops sending new requests to the EC2 instance which is de-registering 
+Between 1 to 3600 seconds (default: 300 econds)
+Can be disabled (set value to 0)
+Set to a low value if your requests are short

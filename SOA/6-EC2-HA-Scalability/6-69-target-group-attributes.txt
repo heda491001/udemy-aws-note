@@ -1,0 +1,48 @@
+Target Groups Settings
+    deregisteration_delay.timeout_seconds: 
+        time the load balancer waits before deregistering a target
+    slow_start.duration_seconds:
+        (see next slide)
+    load_balancing.algorithm.type: 
+        how the load balancer selects targets when routing requests 
+        such as (Round Robin, Least Outstanding Requests)
+    stickiness.enabled
+    stickiness.type: 
+        application-based 
+        duration-based cookie
+    stickiness.app_cookie.cookie_name: 
+        name of the application cookie
+    stickiness.app_cookie.duration_seconds: 
+        application-based cookie expiration
+
+Slow Start Mode
+    By default
+        a target receives its full share of requests once it’s registered with the target group
+    Slow Start Mode 
+        gives healthy targets time to warm-up 
+        before the load balancer sends them a full share of requests
+    The load balancer linearly increases the number of requests that it sends to the target
+    A target exits Slow Start Mode when:
+        The duration period elapses
+        The target becomes unhealthy
+    To disable, set Slow start duration value to 0
+
+
+Request Routing Algorithms 
+    Least Outstanding Requests
+        rule
+            The next instance to receive the request 
+            is the instance that has the lowest number of pending/unfinished requests
+        Works with Application Load Balancer and Classic Load Balancer (HTTP/HTTPS)
+    Round Robin
+        Equally choose the targets from the target group
+        Works with Application Load Balancer and Classic Load Balancer (TCP)
+    Flow Hash
+        Selects a target based on the Hash of 
+            protocol
+            source/destination IP address
+            source/destination port
+            TCP sequence number
+        Each TCP/UDP connection is routed to a single target for the life of the connection
+        Works with Network Load Balancer
+            a NLB version sticky-session
