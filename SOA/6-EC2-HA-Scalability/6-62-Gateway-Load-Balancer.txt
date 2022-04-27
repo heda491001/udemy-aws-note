@@ -1,0 +1,31 @@
+Deploy, scale, and manage a fleet of 3 rd party  network virtual appliances in AWS
+
+Example: 
+    - Firewalls
+    - Intrusion Detection and Prevention Systems
+    - Deep Packet Inspection Systems
+    - payload manipulation
+    ...
+
+    比如
+        你有几个防火墙server
+        然后你想让所有的请求在发送到app server之前，都先发送到防火墙的server进行检查
+        Gateway load balancer功能就是
+            glb会通过配置路由表等等方式, 实现
+                user -> glb -> 防火墙server -> glb -> app server
+
+Operates at Layer 3 (Network Layer) 
+    – IP Packets
+        lower layer then all other load Balancer
+
+Combines the following functions:
+    Transparent Network Gateway
+        – single entry/exit for all traffic
+    Load Balancer – distributes traffic to your virtual appliances
+
+Uses the GENEVE protocol on port 6081
+
+GLB Target Groups
+    EC2 instances 
+    IP Addresses 
+        – must be private IPs

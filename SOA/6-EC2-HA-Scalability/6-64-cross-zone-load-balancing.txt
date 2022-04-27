@@ -1,0 +1,29 @@
+
+
+for example,  we have
+    ELB  -->  AZ1 : node1
+         └->  AZ2 : node2 node3
+
+With Cross Zone Load Balancing:
+    each load balancer instance distributes evenly
+    across all registered instances in all AZ
+    the example will
+        node1, node2, node3, all get 33% traffic
+
+Without Cross Zone Load Balancing:
+    Requests are distributed in the instances of the
+    node of the Elastic Load Balancer
+    the example will
+        node1 get 50% traffic
+        node2 , node3 get 25% traffic
+
+Cross-Zone Load Balancing enable
+    Application Load Balancer
+        Always on (can’t be disabled)
+        No charges for inter AZ data
+    Network Load Balancer
+        Disabled by default
+        You pay charges ($) for inter AZ data if enabled
+    Classic Load Balancer
+        Disabled by default
+        No charges for inter AZ data if enabled

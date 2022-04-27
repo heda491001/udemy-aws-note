@@ -1,0 +1,26 @@
+
+
+每选中一个AZ创建NLB，都需要一个IP
+    这个ip可以自己的，或者由AWS提供
+
+NLB创建时的listenter and routing选项
+    只有TCP/TLS/UDP/TCP_UDP
+    并不像ALB时http协议等等
+
+使用NLB时target group的security Group设定
+    文档参考
+        https://docs.aws.amazon.com/elasticloadbalancing/latest/network/target-group-register-targets.html
+    
+    # 使用ALB时的请求相当于时ALB转发的，只需要将目标的安全组设置成allow ALB的请求就行
+    # 而且ALB设置时可以允许alb的hostname，或者时alb的sg也可以
+
+    但NLB时
+        需要直接允许来自client的访问
+        需要允许来自vpc的访问
+            用来做health check的
+        而且以上的设置均需要使用CIDR/IP地址
+
+    或者也可以图省事，直接允许全部ip拉倒
+
+
+        
