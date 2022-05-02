@@ -1,0 +1,28 @@
+
+-- memo ---
+
+about the Predictive Scaling
+    
+    so it will
+        1) Analyze historical load
+        2) Generate forecast
+        3) Schedule scaling actions
+    
+    in ASG setting , it's just one on/off setting 
+    
+    it will track and anlyze the target metric 
+        which selected in setting [ Metrics and target utilization ]
+
+
+
+
+here is a tool could be useful in ASG testing 
+    name 
+        stree
+    install 
+        sudo amazon-linux-extras install epel -y
+        sudo yum isntall stress -y
+    usage Example
+        stress -c 4
+            # let 4 core goto 100% 
+            # to stop this , you can just restart ec2 instance

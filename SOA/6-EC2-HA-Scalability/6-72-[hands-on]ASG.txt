@@ -1,0 +1,17 @@
+-- memo --
+
+ASG的启动选项里，可以选择混合的收费模式
+    比如可以设置一个on-demaind的baseline，然后超过部分使用spot
+
+health check选项
+    ec2的选项直接是必选的，
+        如果ec2出现了硬件问题，就会被ASG标为unhealth，然后进行处理
+
+    如果添加了ELB会多出一个ELB的health check Type
+    其实就是直接使用ELB的健康检查，
+    可以理解为，
+        如果ELB检测/认为某个实例是unhealth了
+        # 这时ELB就不再给unhealth的实例发请求了，这是ELB负责的部分
+        ELB就会发送信息给ASG
+        然后ASG会做出相应的处理
+            比如关闭unhealth的实例，重启新实例
