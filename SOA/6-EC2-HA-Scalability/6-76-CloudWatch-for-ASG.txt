@@ -1,0 +1,13 @@
+# pdf P.149 ~
+
+Metrics are collected every 1 minute
+
+ASG-level metrics: (opt-in)
+    GroupMinSize, GroupMaxSize, GroupDesiredCapacity
+    GroupInServiceInstances, GroupPendingInstances, GroupStandbyInstances
+    GroupTerminatingInstances, GroupTotalInstances
+    You should enable metric collection to see these metrics
+
+EC2-level metrics (enabled): CPU Utilization, etc... 
+    Basic monitoring: 5 minutes granularity
+    Detailed monitoring: 1 minute granularity

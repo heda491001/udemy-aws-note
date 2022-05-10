@@ -1,0 +1,4 @@
+--- memo ---
+
+in auto scaling console
+    basically , you can change the ASG setting just almost the same way in ASG console

@@ -1,0 +1,36 @@
+# pdf P.150 ~
+
+
+-- overview --
+Backbone service of auto scaling for scalable resources in AWS: 
+
+Amazon EC2 Auto Scaling groups: 
+    Launch or terminate EC2 instances 
+
+Amazon EC2 Spot Fleet requests: 
+    Launch or terminate instances from a Spot Fleet request, 
+    or automatically replace instances that get interrupted for price or capacity reasons.
+
+Amazon ECS: 
+    Adjust the ECS service desired count up or down
+
+Amazon DynamoDB 
+    (table or global secondary index): WCU & RCU
+
+Amazon Aurora: 
+    Dynamic Read Replicas Auto Scaling
+
+
+
+--- Scaling Plans  ---
+
+Dynamic scaling: 
+    creates a target tracking scaling policy
+    Optimize for availability => 40% of resource utilization
+    Balance availability and cost => 50% of resource utilization
+    Optimize for cost => 70% of resource utilization
+    Custom => choose own metric and target value
+    Options: Disable scale-in, cooldown period, warmup time (for ASG)
+
+Predictive scaling: 
+    continuously forecast load and schedule scaling ahead
