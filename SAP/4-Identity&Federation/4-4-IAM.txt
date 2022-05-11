@@ -2,156 +2,270 @@
 # Page 8 ~
 
 
-IAM – What should you know by now
-• Users: long term credentials
-• Groups
-• Roles: short-term credentials, uses STS
-    • EC2 Instance Roles: 
+--- IAM – What should you know by now ----
+Users: long term credentials
+Groups
+Roles: short-term credentials, uses STS
+    EC2 Instance Roles: 
         uses the EC2 metadata service. One role at a time per instance
-    • Service Roles: 
+    Service Roles: 
         API Gateway, CodeDeploy, etc…
-    • Cross Account roles
-• Policies
-    • AWS Managed
-    • Customer Managed
-    • Inline Policies
-• Resource Based Policies (S3 bucket, SQS queue, etc…) 
+    Cross Account roles
+Policies
+    AWS Managed
+    Customer Managed
+    Inline Policies
+Resource Based Policies (S3 bucket, SQS queue, etc…) 
 
-IAM Policies Deep Dive 
-• Anatomy of a policy: 
+--- IAM Policies Deep Dive ---
+Anatomy of a policy: 
     JSON doc with (below five part)
         Effect, 
         Action, 
         Resource, 
         Conditions, 
         Policy Variables
-• Explicit DENY has precedence over ALLOW 
-• Best practice: 
+Explicit DENY has precedence over ALLOW 
+Best practice: 
     use least privilege for maximum security 
     two tools for this
-        • Access Advisor: 
+        Access Advisor: 
             See permissions granted and when last accessed
-        • Access Analyzer: 
+        Access Analyzer: 
             Analyze resources that are shared with external entity
-• Navigate Examples at:
+Navigate Examples at:
     https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_examples.html
 
 
-IAM AWS Managed Policies
-AdministratorAccess 
+--- IAM AWS Managed Policies ---
+
+<AdministratorAccess>
 {
-    "Version": "2012
--10
--17",
-"Statement": [ {
-"Effect": "Allow",
-"Action": "*",
-"Resource": "*"
-}
-]
+    "Version": "2012-10-17",
+    "Statement": [ 
+        {
+            "Effect": "Allow",
+            "Action": "*",
+            "Resource": "*"
+        }
+    ]
 }
 
-PowerUserAccess
+<PowerUserAccess>
 {
-"Version": "2012-10-17",
-"Statement": [
-{
-"Effect": "Allow",
-"NotAction": [
-"iam:*",
-"organizations:*",
-"account:*"
-],
-"Resource": "*"
-},…
-…{
-"Effect": "Allow",
-"Action": [
-"iam:CreateServiceLinkedRole",
-"iam:DeleteServiceLinkedRole",
-"iam:ListRoles",
-"organizations:DescribeOrganization”,
-"account:ListRegions"
-],
-"Resource": "*"
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "NotAction": [
+                "iam:*",
+                "organizations:*",
+                "account:*"
+            ],
+            "Resource": "*"
+        },…
+        …{
+            "Effect": "Allow",
+            "Action": [
+                "iam:CreateServiceLinkedRole",
+                "iam:DeleteServiceLinkedRole",
+                "iam:ListRoles",
+                "organizations:DescribeOrganization”,
+                "account:ListRegions"
+            ],
+            "Resource": "*"
+        }
+    ]
 }
-]
-}
+
+# a point of this <PowerUserAccess> policy :
+if we "DENY" these "Actions" in the fisrt Statement,
+even the second Statement "Allow", it won't work
+    which we mentioned before
+        [ Explicit DENY has precedence over ALLOW ]
+so to allow these two things to coexist together,
+"Allow"+"NotAction" instead of "DENY" , in the first Statement
 
 
-IAM Policies Conditions
+--- IAM Policies Conditions ----
 
-"Condition" : { "{condition-operator}" : { "{condition-key}" : "{condition-value}" }}
+<Sample>
+    "Condition" : { 
+        "{condition-operator}" : { 
+            "{condition-key}" : "{condition-value}" 
+        }
+    }
+
 Operators:
-• String (StringEquals, StringNotEquals, StringLike…)
-• "Condition": {"StringEquals": {"aws:PrincipalTag/job-category": "iamuser-admin"}}
-• "Condition": {"StringLike": {"s3:prefix": [ "", "home/", "home/${aws:username}/" ]}}
-• Numeric (NumericEquals, NumericNotEquals, NumericLessThan…)
-• Date (DateEquals, DateNotEquals, DateLessThan…)
-• Boolean (Bool):
-• “Condition": {"Bool": {"aws:SecureTransport": "true"}}
-• "Condition": {"Bool": {"aws:MultiFactorAuthPresent": "true"}}
-• (Not)IpAddress:
-• "Condition": {"IpAddress": {"aws:SourceIp": "203.0.113.0/24"}}
-• ArnEquals, ArnLike
-• Null: "Condition":{"Null":{"aws:TokenIssueTime":"true"}} 
+    String 
+        StringEquals, StringNotEquals, StringLike…
+        for Example :
+          - "Condition": {
+                "StringEquals": {
+                    "aws:PrincipalTag/job-category": "iamuser-admin"
+                }
+            }
+          - "Condition": {
+                "StringLike": {
+                    "s3:prefix": [ "", "home/", "home/${aws:username}/" ]
+                }
+            }
+    Numeric 
+        NumericEquals, NumericNotEquals, NumericLessThan…
+    Date 
+        DateEquals, DateNotEquals, DateLessThan…
+    Boolean (Bool):
+        Example :
+          - “Condition": {
+                "Bool": {
+                    "aws:SecureTransport": "true"
+                }
+            }
+          - "Condition": {
+                "Bool": {
+                    "aws:MultiFactorAuthPresent": "true"
+                    }
+                }
+    (Not)IpAddress:
+        Example :
+            "Condition": {"IpAddress": {"aws:SourceIp": "203.0.113.0/24"}}
+    ArnEquals, ArnLike
+    Null: 
+        Example :
+            "Condition":{"Null":{"aws:TokenIssueTime":"true"}} 
 
 
 
-IAM Policies Variables and Tags
+--- IAM Policies Variables and Tags ---
 
 Example: ${aws:username}
-• "Resource": ["arn:aws:s3:::mybucket/${aws:username}/*"]
+    "Resource": ["arn:aws:s3:::mybucket/${aws:username}/*"]
+
 AWS Specific:
-• aws:CurrentTime, aws:TokenIssueTime, aws:principaltype, aws:SecureTransport,
-aws:SourceIp, aws:userid, ec2:SourceInstanceARN
+    aws:CurrentTime, aws:TokenIssueTime, 
+    aws:principaltype, aws:SecureTransport,
+    aws:SourceIp, aws:userid, ec2:SourceInstanceARN
+
 Service Specific:
-• s3:prefix, s3:max-keys, s3:x-amz-acl, sns:Endpoint, sns:Protocol…
+    s3:prefix, s3:max-keys, s3:x-amz-acl, 
+    sns:Endpoint, sns:Protocol…
+
 Tag Based:
-• iam:ResourceTag/key-name, aws:PrincipalTag/key-name…
+    iam:ResourceTag/key-name, 
+    aws:PrincipalTag/key-name…
 
 
-IAM Roles vs Resource Based Policies
+--- IAM Roles vs Resource Based Policies ---
 
-• Attach a policy to a resource (example: S3 bucket policy) versus
-attaching of a using a role as a proxy
+Attach a policy to a resource (example: S3 bucket policy) 
+versus attaching of a using a role as a proxy
 
+For example :   
+    we want grant a permission to User in Account A ,
+    so it can acces to the S3 bucket in Account B
 
+    there are two ways
 
+    1. create a role in Account B , 
+       which has the acces to s3 bucket, and can be assume by Account A user
 
-IAM Roles vs Resource Based Policies
-• When you assume a role (user, application or service), you give up your
-original permissions and take the permissions assigned to the role
-• When using a resource-based policy, the principal doesn’t have to give up any permissions
-• Example: User in account A needs to scan a DynamoDB table in Account A and dump it in an S3 bucket in Account B.
-• Supported by: Amazon S3 buckets, SNS topics, SQS queues, Lambda
-functions, ECR, Backup, EFS, Glacier, Cloud9, AWS Artifact, Secrets Manager,
-ACM, KMS, CloudWatch Logs, API Gateway, EventBridge etc… 
+        User      --->  Role      --->  S3
+        Account A       Account B       Account B
 
+    2. attach the s3 policy in Account B bucket,
+       that allow Account A user to acces
 
-
-IAM Permission Boundaries
-• IAM Permission Boundaries are supported for users and roles (not groups)
-• Advanced feature to use a managed policy to set the maximum permissions
-an IAM entity can get.
-
+        User      --->  S3 bucket --->  S3
+        Account A       policy          Account B
 
 
-IAM Permission Boundaries
-• Can be used in combinations of
-AWS Organizations SCP
+so what the difference ?
 
-Use cases
-• Delegate responsibilities to non
-administrators within their permission
-boundaries, for example create new IAM
-users
-• Allow developers to self-assign policies and manage their own permissions, while
-making sure they can’t “escalate” their
-privileges (= make themselves admin)
-• Useful to restrict one specific user
-(instead of a whole account using
-Organizations & SCP)
+for 1. , using <IAM Roles>
+    When you assume a role (user, application or service), 
+    you give up your original permissions 
+    and take the permissions assigned to the role
+
+for 2. , using <Resource Based Policies>
+    When using a resource-based policy, 
+    the principal doesn’t have to give up any permissions
+
+Example: 
+    User in account A needs to scan a DynamoDB table in Account A 
+    and dump it in an S3 bucket in Account B.
+
+    so in this case , 
+        it easier to use <Resource Based Policies> 
+        because we need the acces the resource in two accounts
+
+
+Resource Policies Supported by:  
+    Amazon S3 buckets, SNS topics, SQS queues, Lambda functions, 
+    ECR, Backup, EFS, Glacier, Cloud9, AWS Artifact, Secrets Manager,
+    ACM, KMS, CloudWatch Logs, API Gateway, EventBridge etc… 
+# most of services in AWS , but not include the ec2
+
+
+
+--- IAM Permission Boundaries ---
+
+IAM Permission Boundaries are supported for users and roles (not groups)
+
+Advanced feature to use a managed policy 
+to set the maximum permissions an IAM entity can get.
+
+Example :
+    === IAM Permission Boundary ====
+    {
+        "Version": "2022-10-17"
+        "Statement": [
+            {
+                "Effect": "Allow" ,
+                "Action": [
+                    "s3:*",
+                    "CloudWatch:*",
+                    "ec2:*"
+                ],
+                "Resource": "*"
+            }
+        ]
+    }
+
+    === IAM Permission Through IAM Policy ====
+    {
+        "Version": "2022-10-17"
+        "Statement": [
+            {
+                "Effect": "Allow" ,
+                "Action": "iam:CreateUser",
+                "Resource": "*"
+            }
+        ]
+    }
+
+    this [ IAM Permission Boundary ] + [ IAM Policy ]
+    result will be no permission
+
+
+
+IAM Permission Boundaries Can be used in combinations of AWS Organizations SCP
+    The effective permissions will be the intersection of ,
+        - AWS Organizations SCP
+        - IAM Permission Boundary
+        - IAM Policy (Identity-based policy)
+
+Use cases :
+  - Delegate responsibilities to non administrators 
+    within their permission boundaries,
+     for example create new IAM users
+
+  - Allow developers to self-assign policies 
+    and manage their own permissions, while making sure 
+    they can’t “escalate” their privileges (= make themselves admin)
+
+  - Useful to restrict one specific user 
+    (instead of a whole account using Organizations & SCP)
+        # in Boundaries policies , you can target a specific resource
 
 
 
