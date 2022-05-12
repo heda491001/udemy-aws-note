@@ -1,0 +1,82 @@
+# Page.43
+
+===== AWS Organizations ============
+
+a simple diagram
+
+Root Organizational Unit (OU)
+    - Management Account
+    - OU(DEV)
+        - Member Account
+        - Member Account
+    - OU(Prod)
+        - Member Account
+        - Member Account
+        - OU(HR)
+            - Member Account
+            - Member Account
+        - OU(Fiance)
+            - Member Account
+            - Member Account
+
+# point 
+    - top of the Organization, it's the Root OU
+    - in Root OU we will have management Account 
+        we will use this account for all administration purposes
+    - in Root OU we can seviral different OUs
+        and each OUs can also have some OUs and Member accounts inside 
+
+
+
+
+====== OrganizationAccountAccessRole ==============
+
+IAM role 
+    which grants full administrator permissions 
+    in the Member account to the Management account
+
+    * that why Management Account can manage Member account
+
+Used to perform admin tasks in the Member accounts (e.g., creating IAM users)
+
+Could be assumed by IAM users in the Management account
+
+Automatically added to all new Member accounts created with AWS Organizations
+
+Must be created manually if you invite an existing Member account
+
+
+
+====== Multi Account Strategies =================
+
+Create accounts 
+    per department, per cost center, per dev / test / prod,
+    based on regulatory restrictions (using SCP), 
+    for better resource isolation (ex: VPC), 
+    to have separate per-account service limits, isolated account for logging,
+
+Multi Account vs. One Account Multi VPC
+
+Use tagging standards for billing purposes
+
+Enable CloudTrail on all accounts, send logs to central S3 account
+
+Send CloudWatch Logs to central logging account
+
+Strategy to create an account for security
+
+
+
+
+
+AWS Organization - Feature Modes
+Consolidated billing features:
+Consolidated Billing across all accounts - single payment method
+Pricing benefits from aggregated usage (volume discount for EC2, S3…)
+All Features (Default):
+Includes consolidated billing features, SCP
+Invited accounts must approve enabling all features
+Ability to apply an SCP to prevent member accounts from leaving the org
+Can’t switch back to Consolidated Billing Features only
+
+
