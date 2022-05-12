@@ -1,0 +1,57 @@
+# Page.34 ~ 
+
+
+==== What is Microsoft Active Directory (AD)? ====
+
+- Found on any Windows Server with <AD Domain> Services 
+
+- Database of objects: 
+    User Accounts, Computers, Printers, File Shares, Security Groups
+
+- Centralized security management, create account, assign permissions
+
+- Objects are organized in <trees>
+- A group of <trees> is a <forest>
+
+for example
+
+    we have a <Domain Controller> server ,
+    it saved John's account ( such as username and password ) 
+    
+    so now all of the servers under this <Domain Controller>
+    can be access using the John's account 
+
+
+
+==== What is ADFS (AD Federation Services)? =======
+
+ADFS provides Single Sign-On across applications
+
+it provide SAML across 3 rd party: 
+    AWS Console, Dropbox, Office365, etc...
+
+# so we already see some graph in [4-6] lecture
+in short , ADFS is :
+    Federation using AD
+    ADFS provide a SAML2.0 Assertion
+    
+
+
+==== AWS Directory Services ====
+
+# there are three kind of AD Services provided in AWS
+
+AWS Managed Microsoft AD
+    Create your own AD in AWS, manage users locally, supports MFA
+    Establish “trust” connections with your on-premises AD
+             auth                         trust                         auth   
+    users <-------->  [on-premise AD]  <----------> [AWS Managed AD] <--------> user
+
+
+AD Connector
+    Directory Gateway (proxy) to redirect to on-premises AD, supports MFA
+    Users are managed on the on-premises AD
+
+Simple AD
+    AD-compatible managed directory on AWS
+    Cannot be joined with on-premises AD
