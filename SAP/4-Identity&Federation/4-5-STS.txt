@@ -1,0 +1,142 @@
+
+Page. 18~
+
+=== Using STS to Assume a Role =====
+
+  - Define an IAM Role within your account or cross-account
+
+  - Define which principals can access this IAM Role
+
+  - Use AWS STS (Security Token Service) to retrieve credentials 
+    and impersonate the IAM Role you have access to (AssumeRole API)
+
+  - Temporary credentials can be valid between 15 minutes to 12 hour
+
+
+        AssumeRole API                      permissions
+user  ------------------->   AWS STS   <-------------------> IAM
+  |   <-------------------  
+  |    Temporary Security credentials
+  |        
+  └---> Role
+    (Same or different account)
+
+
+=== Assuming a Role with STS =====
+  - Provide access for an IAM user in one AWS account 
+    that you own to access resources in another account that you own
+
+  - Provide access to IAM users in AWS accounts owned by third parties
+
+  - Provide access for services offered by AWS to AWS resources
+
+  - Provide access for externally authenticated users 
+    (identity federation)
+
+  - Ability to revoke active sessions and credentials for a role 
+    (by adding a policy using a time statement – AWSRevokeOlderSessions)
+
+When you assume a role (user, application or service), 
+you give up your original permissions 
+and take the permissions assigned to the role
+
+
+
+=== Providing Access to an IAM User in Your ===
+=== or Another AWS Account That You Own     ===
+
+You can grant your IAM users permission to switch to roles 
+within your AWS account or to roles defined in other AWS accounts that you own.
+
+Benefits:
+  - You must explicitly grant your users permission to assume the role.
+
+  - Your users must actively switch to the role using the AWS Management Console 
+    or assume the role using the AWS CLI or AWS API
+
+  - You can add multi-factor-authentication (MFA) protection to the role 
+    so that only users who sign in with an MFA device can assume the role
+    
+  - Least privilege + auditing using CloudTrail
+
+
+
+=== Cross account access with STS ===
+# Refer Page. 21 Graph
+
+    1. Admin creates role  <UpdatApp>
+    that grants DEV accout read/write access to PROD s3
+
+    2. Admin grants DEV members permission 
+    to assume the role <UpdatApp>
+
+    3. DEV users request access to role 
+
+    4. STS returns Role credentials
+
+    5. user can access the S3 bucket by using the Role credentials
+
+
+
+=== Providing Access to AWS Accounts Owned by Third Parties ===
+
+Zone of trust = accounts, organizations that you own
+Outside Zone of Trust = 3rd parties 
+
+Use IAM Access Analyzer 
+    to find out which resources are exposed
+    (outside the zone of trust)
+
+For granting access to a 3rd party:
+    The 3rd party AWS account ID
+    An External ID 
+        (secret between you and the 3rd party)
+        To uniquely associate with the role between you and 3 rdparty
+        Must be provided when defining the trust and when assuming the role
+        Must be chosen by the 3rdparty 
+    Define permissions in the IAM policy
+
+
+=== The confused deputy ===
+# Refer Page. 23 Graph
+this is reason why we need to define a External ID for 3rd party access
+
+# or just refer to this docs for explaination
+    https://docs.aws.amazon.com/zh_cn/IAM/latest/UserGuide/confused-deputy.html
+
+此场景假定：
+    AWS1是您的AWS账户ID
+    AWS1:ExampleRole 是您账户中的一个role
+    该角色的信任策略通过将ExampleCorp的AWS账户指定
+    为可担任该角色的账户来信任 Example Corp。
+
+将发生以下情况：
+
+  1.在您开始使用Example-Corp的服务时, 您将向 Example-Corp 提供 AWS1:ExampleRole 的 ARN。
+
+  2.Example-Corp 使用该角色 ARN 获取临时安全凭证以访问您的 AWS 账户中的资源。
+    这样一来，您将信任 Example Corp 作为可代表您执行操作的“代理人”。
+
+  3.另一个 AWS 客户也开始使用 Example-Corp 的服务，
+    而且此客户还为 Example Corp 提供了 AWS1:ExampleRole 的 ARN 以供其使用。
+    * 另一个客户可能已了解或猜到已不是机密信息的 AWS1:ExampleRole。
+
+  4.当另一个客户要求 Example-Corp 访问（它声称的）其账户中的 AWS 资源时，
+    Example-Corp 使用 AWS1:ExampleRole 访问您的账户中的资源。
+
+
+so AWS suggest to use the External ID , then 
+  in 1. , 
+    Example-Corp will be also provided a <External ID>
+
+  in 2. ,
+    use both credentials and <External ID> , 
+    Example-Corp can access our aws resources
+
+  and in 3. ,
+    because <External ID> is a secret between you and Example-Corp,
+    Any other AWS account will not able to access you AWS resources using Example-Corp
+
+
+
+
