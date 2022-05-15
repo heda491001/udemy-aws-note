@@ -1,0 +1,60 @@
+# page 62
+
+===== AWS Control Tower ==========
+
+
+Easy way to set up and govern a secure 
+    and 
+compliant multi-account AWS environment based on best practices
+
+Benefits:
+    Automate the set up of your environment in a few clicks
+    Automate ongoing policy management using guardrails
+    Detect policy violations and remediate them
+    Monitor compliance through an interactive dashboard
+
+AWS Control Tower runs on top of AWS Organizations:
+    It automatically sets up AWS Organizations to organize accounts 
+    and implement SCPs (Service Control Policies)
+
+
+===== Account Factory ==========
+
+Automates account provisioning and deployments
+
+Enables you 
+    create pre-approved baselines 
+    configuration options for AWS accounts in your organization 
+        (e.g., VPC default configuration, subnets, region, …)
+
+Uses AWS Service Catalog to provision new AWS accounts
+
+
+===== Detect and Remediate Policy Violations ==========
+
+so we use a Service called Guardrail
+    * [Guardrail] n. 栏杆
+
+Guardrail
+    Provides ongoing governance for your Control Tower environment 
+        (AWS Accounts)
+
+    Preventive – using SCPs 
+        (e.g., Disallow Creation of Access Keys for the Root User)
+    
+    Detective – using AWS Config 
+        (e.g., Detect Whether MFA for the Root User is Enabled)
+
+    Example: 
+        identify non-compliant resources 
+            (e.g., untagged resources)
+            -------------------------            
+            - So we have a detective guardrail 
+                in control tower 
+                which using AWS config  
+                and it will monitor for untagged member accounts
+            - if it detected a <non-compliant> 
+                it will trigger <SNS topic>
+            - then <SNS topic> will 
+                notify Admin (send mail)
+                invoke Lambda to remediate (add tags)

@@ -1,0 +1,78 @@
+# Page. 58 
+
+============= AWS Single Sign-On (SSO) ==================================
+
+• Centrally manage SSO access to:
+    • Multiple AWS accounts
+    • Commonly used business applications 
+        (e.g., Salesforce, Box, Office 365, …)
+    • Custom SAML 2.0-based applications
+
+• Integrated with AWS Organizations
+
+• Identity source:
+    • SSO-built in: manage users & groups
+    • Active Directory through Directory Services
+        (AWS Managed Microsoft AD or AD Connector)
+    • External Identity Provider: any SAML 2.0 Identity Provider 
+        (e.g., Azure AD, Okta Universal Directory)
+
+• Centralized permission management
+
+• Centralized auditing with CloudTrail 
+    (e.g., user sign-in activities)
+
+* view below blog for more explaination
+https://aws.amazon.com/jp/blogs/security/introducing-aws-single-sign-on/
+
+
+
+============= SSO vs AssumeRoleWithSAML ==================================
+
+
+AWS Single Sign-On
+    <AWS-SSO> integrated with an identity store
+    client sign-into <AWS-SSO> directly
+    after verifying, <AWS-SSO>
+        will provide credentials 
+        and client can access AWS resources
+
+AssumeRoleWithSAML
+    client sign-in IdP
+    IdP authenticate with Identity Store 
+    give a SAML credentials to client
+    client send the SAML credentials to <STS> 
+    <STS> send back another credentials for AWS
+    use the credentials client can access AWS
+
+comparison
+    SSO is much more easier to setup 
+        since it actually hides a lot of complexity of what happens behind the scenes.
+    but because it has to be integrated with the Identity Store
+        you need to be the owner of identity provider
+
+
+
+============= AWS Single Sign-On (SSO) – With AD ==================================
+
+how it work ?
+    set up an integration between <AWS-SSO> and AD
+    users sign into the <AWS-SSO> portal
+    SSO provide credentials and users can access resources
+
+
+so how to set up an integration between <AWS-SSO> and AD ?
+    
+    for AWS Managed Microsoft AD
+        very simple config
+        * simple AD does not support <AWS-SSO>
+    
+    if you need to connect with a AD on-permise ,two ways :
+    
+        1. 
+            setup a AWS Managed AD integrated with SSO
+            set a 2-way forest trust between AWS Managed AD and On-permise AD 
+    
+        2. 
+            setup a <AD Connector> integrated with SSO
+            AD Connector will proxy request to on-premises AD

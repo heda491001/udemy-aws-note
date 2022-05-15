@@ -1,0 +1,54 @@
+# Page.  66
+
+===== AWS Resource Access Manager (RAM) ==========
+
+Share AWS resources that you own with other AWS accounts
+Share with any account or within your Organization
+
+Avoid resource duplication!
+
+RAM supported services :
+- VPC Subnets
+    Allow to have all the resources launched in the same subnets
+    Must be from the same AWS Organizations. 
+    Cannot share security groups and default VPC
+    Participants 
+      - can manage their own resources in there
+      - can't view, modify, delete resources 
+        that belong to other participants or the owner
+- AWS Transit Gateway
+- Route 53 
+    (Resolver Rules, DNS Firewall Rule Groups)
+- License Manager Configurations
+- Aurora DB Clusters
+- ACM Private Certificate Authority
+- CodeBuild Project
+- EC2 
+    (Dedicated Hosts, Capacity Reservation)
+- AWS Glue 
+    (Catalog, Database, Table)
+- AWS Network Firewall Policies
+- AWS Resource Groups
+- Systems Manager Incident Manager 
+    (Contacts, Response Plans)
+- AWS Outposts 
+    (Outpost, Site)
+
+
+
+==== Resource Access Manager – VPC example =====
+
+# From an exam perspective 
+    one of the most important use case is <RAM> for the VPC.
+
+Each account...
+    is responsible for its own resources
+    cannot view, modify or delete other resources in other accounts
+
+Network is shared so...
+    Anything deployed in the VPC can talk to other resources in the VPC
+    Applications are accessed easily  across accounts, using private IP!
+    Security groups from other accounts can be referenced for maximum security
+
+
+So this avoid the needs, for example, to do a VPC pairing.
