@@ -1,0 +1,119 @@
+# Page. 70
+
+===== AWS CloudTrail ==========
+
+- Provides governance, compliance and audit 
+  for your AWS Account
+
+- CloudTrail is enabled by default!
+
+- Get an history of events / API calls 
+  made within your AWS Account by:
+    Console
+    SDK
+    CLI
+    AWS Services
+
+- Can put logs from CloudTrail 
+    into CloudWatch Logs 
+    or S3
+
+- A trail can be applied 
+    to All Regions (default) 
+    or a single Region.
+
+* If a resource is deleted in AWS, 
+  investigate CloudTrail first!
+
+
+===== CloudTrail Events ==========
+
+Management Events:
+    Operations that are performed on resources in your AWS account    
+    Examples:
+        Configuring security
+            (IAM AttachRolePolicy)
+        Configuring rules for routing data 
+            (Amazon EC2 CreateSubnet)
+        Setting up logging 
+            (AWS CloudTrail CreateTrail)
+    By default, trails are configured to log management events.
+    Can separate by read/write
+        Read Events (that don’t modify resources) 
+        from Write Events (that may modify resources)
+
+Data Events:
+    By default, data events are not logged 
+        because high volume operations
+    including
+        Amazon S3 object-level activity : 
+            ex: GetObject, DeleteObject, PutObject
+            can separate Read/Write Events
+        AWS Lambda function execution activity 
+            the Invoke API
+
+CloudTrail Insights Events:
+    See next part
+
+
+
+===== CloudTrail Insights ==========
+
+※ 
+    So when we have so many management events across all types of services
+    and so many APS happening very very quickly in your accounts,
+    it can be quite difficult to understand what looks odd,
+    what looks unusual and what doesn't.
+    And so this is where CloudTrail Insights comes in.
+
+Enable CloudTrail Insights to detect unusual activity in your account:
+    inaccurate resource provisioning
+    hitting service limits
+    Bursts of AWS IAM actions
+    Gaps in periodic maintenance activity
+
+CloudTrail Insights analyzes normal management events to create a baseline
+
+And then continuously analyzes write events to detect unusual patterns
+    Anomalies appear in the CloudTrail console
+    Event is sent to Amazon S3
+    An EventBridge event is generated 
+        (for automation needs)
+        for example : send a mail to administor
+
+Management Event
+    |
+    |  [Continous analysis]
+    |
+    |--> CloudTrail Insights
+            |
+            |  [generate]
+            |
+            |--> Insights Events
+                    |
+                    |---> CloudTrail Console
+                    |---> S3 Bucket
+                    |---> EventBridge event
+
+===== CloudTrail Events Retention ==========
+
+Events are stored for 90 days in CloudTrail
+
+To keep events beyond this period, 
+    log them to S3 and use Athena
+
+
+
+Management Events   ---|
+Data Events         ---|      
+Insights Events     ---|
+                       |
+                       |----> CloudTrail (90 days retention)
+                                |
+                                | log
+                                |
+                                |---> S3 Bucket (Long-term retentio)
+                                        |
+                                        | analyze
+                                        |
+                                        |----> Athena

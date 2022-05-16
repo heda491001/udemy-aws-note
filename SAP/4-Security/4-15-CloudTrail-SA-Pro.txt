@@ -1,0 +1,109 @@
+# Page. 75
+
+
+===== Solution Architecture:Delivery to S3 ==========
+
+CloudTrail
+    |
+    |  Delivery notifications
+    |-------------------------> SNS
+    |                            |
+    |                            |--> SQS
+    |                            |--> Lambda
+    |
+    | Every 5 min
+    |------------------> S3
+      SSE-S3 (default)    | Lifecycle Policy
+      or SSE-KMS          |-----------------> Glacier
+                          | S3 Events
+                          |------
+                                |--> SQS
+                                |--> SNS
+                                |--> Lambda
+
+S3 Enhancements:
+    Enable Versioning
+    MFA Delete Protection
+    S3 Lifecycle Policy (S3 IA, Glacier…)
+    S3 Object Lock
+    SSE-S3 or SSE-KMS encryption
+    Feature to perform CloudTrail Log File Integrity validation
+        (SHA-256 for hashing and signing)
+
+
+
+
+===== Solution Architecture:Multi Account, Multi Region Logging ==========
+
+Account A   ----|
+CloudTrail      |
+                |      
+Account B   ----|
+CloudTrail      |send the log 
+                |      
+                |----> Security Account
+                        S3 + S3 Bucket Policy
+                            - cloudtrail-bucket/account-A
+                            - cloudtrail-bucket/account-B
+                            - cloudtrail-bucket/account-C
+                            - .....
+
+                
+Observations:
+    The S3 bucket policy is necessary for cross-account delivery
+    If Account A wants to access its CloudTrail files:
+        Option 1: 
+            create a cross-account role and assume the role
+        Option 2: 
+            edit the bucket policy
+
+
+
+===== Solution Architecture:Alert for API calls ==========
+
+Log filter metrics can be used to detect a high level of API happening
+Ex: Count occurrences of EC2 TerminateInstances API
+Ex: Count of API calls per user
+Ex: Detect high level of Denied API calls
+
+CloudTrail
+    |
+    | stream
+    |--> CW Logs
+            |
+            |--> Metric Filters
+                    |
+                    |--> CW Alarm
+                            |
+                            |--> SNS
+
+
+
+===== Solution Architecture:Organizational Trail ==========
+
+for AWS Organizations
+    
+    you can create a Organizational Cloudtrail 
+        it will audit all the <Member Account> behavior
+        it must be created in <Management Account>
+
+    you can create a S3 bucket in <Management Account>
+        to store the Organizational cloudtrail's logs 
+
+
+
+===== CloudTrail: How to react to events the fastest? ==========
+
+Overall, CloudTrail may take up to 15 minutes to deliver events
+
+CloudWatch Events:
+    Can be triggered for any API call in CloudTrail
+    The fastest, most reactive way
+
+CloudTrail Delivery in CloudWatch Logs:
+    Events are streamed
+    Can perform a metric filter to analyze occurrences and detect anomalies
+
+CloudTrail Delivery in S3:
+    Events are delivered every 5 minutes
+    Possibility of analyzing logs integrity, deliver cross account, long-term storage

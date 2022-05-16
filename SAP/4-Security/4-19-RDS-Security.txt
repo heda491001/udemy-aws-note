@@ -1,0 +1,18 @@
+# Page. 97
+
+===== RDS - Security ==========
+
+KMS encryption at rest for underlying EBS volumes / snapshots
+
+Transparent Data Encryption (TDE) for Oracle and SQL Server
+
+SSL encryption to RDS is possible for all DB (in-flight)
+
+IAM authentication for MySQL and PostgreSQL
+but Authorization still happens within RDS 
+    (not in IAM)
+
+Can copy an un-encrypted RDS snapshot into an encrypted one
+    * very sample question in exam
+
+CloudTrail cannot be used to track queries made within RDS
