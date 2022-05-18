@@ -1,0 +1,80 @@
+# Page. 110
+
+
+===== SSL on ALB ==========
+
+# ALB integrated with ACM to provide SSL cert
+
+                                AutoScaling group
+                             ----------------------   
+         https       http       ┌--> ec2 instance
+    user -----> ALB ------------+--> ec2 instance
+                 |              └--> ec2 instance
+                 |                  
+            SSL cert from ACM      
+
+
+
+===== SSL on web server EC2 instances ==========
+
+user 
+  | TCP
+  |----> NLB       AutoScaling group        SSM Parameter Store
+          |      ----------------------          |
+          | HTTPS                                |   
+          |------> ec2 instance <----------------|
+          |------> ec2 instance <----------------|  (IAM permissions)
+          |------> ec2 instance <----------------|
+                             Retrieve SSL private key
+
+
+how it work ?
+    make you own web server on ec2 instance
+    Retrieve SSL cert from SSM Parameter Store
+        you can set this in EC2 boot script
+        ec2 instance need to be proper IAM setup
+        
+
+but
+    performing SSL encryption and decryption can use up
+    some valuable CPU resources on your EC2 instances.
+
+    you have to extract the SSL cert out of your SSM Parameter Store,
+    which maybe a risk problem if someone can SSH into your EC2 instances.
+
+
+===== CloudHSM – SSL Offloading ==========
+
+# almost the same as above ,
+
+user 
+  | TCP
+  |----> NLB       AutoScaling group          CloudHSM <-----> CloudHSM
+          |      ----------------------          |             (multi-AZ)
+          | HTTPS                                |   
+          |<-----> ec2 instance <--------------->|
+          |<-----> ec2 instance <--------------->|  
+          |<-----> ec2 instance <--------------->|
+                                   SSL Offloading
+
+
+You can offload SSL to CloudHSM (SSL Acceleration)
+    CloudHSM will perform SSL Acceleration
+    which will save resources for your Web Server ec2 instance
+
+and all the 
+
+Supported by 
+    NGINX,
+    Apache Web servers 
+    IIS for Windows Server
+
+Extra security: 
+    the SSL private key never leaves the HSM device
+
+Must setup a cryptographic user (CU) on the CloudHSM device
+    and make sure your ec2 instance can use this user 
+        for example : 
+            you can save the user name and password 
+            in SSM Parameter Store
+

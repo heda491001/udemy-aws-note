@@ -1,0 +1,136 @@
+# Page. 105
+
+===== CloudHSM ==========
+
+KMS 
+    => AWS manages the software & Key for encryption
+
+CloudHSM 
+    => AWS provisions encryption hardware
+
+Dedicated Hardware  
+    HSM = Hardware Security Module
+
+You manage your own encryption keys entirely 
+    (not AWS)
+
+HSM device is 
+    tamper resistant, 
+    FIPS 140-2 Level 3 compliance
+
+Supports both symmetric and asymmetric encryption (SSL/TLS keys)
+
+No free tier available
+
+Must use the CloudHSM Client Software
+
+Redshift supports CloudHSM for database encryption and key management
+
+Good option to use with SSE-C encryption
+    * very common partten
+
+
+===== CloudHSM Diagram ==========
+
+
+AWS manages the Hardware
+-------------------------
+                        SSL Connection
+    AWS CloudHSM  <-----------------------------> CloudHSM Client
+                        User manages the Keys
+
+# Provided by AWS
+
+    IAM permissions:
+        CRUD an HSM Cluster
+
+# Managed yourself
+
+    CloudHSM Software:
+        Manage the Keys
+        Manage the Users
+
+
+===== CloudHSM – High Availability ==========
+
+CloudHSM clusters are spread across Multi AZ (HA)
+
+Great for availability and durability
+
+
+
+===== CloudHSM vs. KMS ==========
+
+Tenancy 
+    KMS
+        Multi-Tenant 
+    CloudHSM        
+        Single-Tenant
+
+Standard
+    KMS
+        FIPS 140-2 Level 2 
+    CloudHSM        
+        FIPS 140-2 Level 3
+
+Master Keys 
+    KMS
+        AWS Owned Keys
+        AWS Managed Keys
+        Customer Managed KMS Keys
+    CloudHSM
+        Customer Managed CMK
+
+Key Types 
+    KMS
+        Symmetric
+        Asymmetric
+        Digital Signing
+    CloudHSM
+        Symmetric
+        Asymmetric
+        Digital Signing & Hashing
+
+Key Accessibility 
+    KMS
+        Accessible in multiple AWS regions 
+        (can’t access keys outside the region it’s created in)
+    CloudHSM
+        Deployed and managed in a VPC
+        Can be shared across VPCs (VPC Peering)
+
+Crypotgraphic Acceleration
+    KMS
+        None 
+    CloudHSM
+        SSL/TLS Acceleration
+        Oracle TDE Acceleration
+
+Access & Authentication
+    KMS
+        AWS IAM 
+    CloudHSM
+        You create users and manage their permissions
+
+
+High Availability
+    KMS
+        AWS Managed Service 
+    CloudHSM        
+        Add multiple HSMs over different AZs
+
+Audit Capability
+    KMS
+        CloudTrail 
+        CloudWatch
+    CloudHSM
+        CloudTrail 
+        CloudWatch 
+        MFA support
+
+Free Tier 
+    KMS
+        Yes 
+    CloudHSM
+        No
+        

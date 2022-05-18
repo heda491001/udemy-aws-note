@@ -1,0 +1,30 @@
+# Page. 123
+
+========== Network Security ===============================
+
+Security Groups
+    Attached to ENI 
+        Elastic Network Interfaces
+        for EC2, RDS, Lambda in VPC, etc
+    Are stateful 
+        any traffic in is allowed to go out
+        any traffic out can go back in
+    Can reference by CIDR and security group id
+    Supports security group references for VPC peering
+    # there is no denied rule , rules are all allowed something
+    Default: 
+        inbound denied
+            # means there is no allowed rule by default
+            # so you need add rolls if you want to change 
+        outbound all allowed
+            # means there is a roll allowed everything by default
+            # so you need remove rolls if you want to change  
+    
+NACL (Network ACL):
+Attached at the subnet level 
+Are stateless (inbound and outbound rules apply for all traffic)
+Can only reference a CIDR range (no hostname)
+Default: allow all inbound, allow all outbound
+New  NACL: denies all inbound, denies all outbound
+Host Firewall
+Software based, highly customizable

@@ -1,0 +1,63 @@
+# Page. 103
+
+===== AWS Certificate Manager (ACM) ==========
+
+To host public SSL certificates in AWS, you can:
+    Buy your own and upload them using the CLI
+    Have ACM provision and renew public SSL certificates automatically
+        (free of cost)
+
+ACM loads SSL certificates on the following integrations:
+    Load Balancers 
+        (including the ones created by EB)
+    CloudFront distributions
+    APIs on API Gateways
+
+who will it work ?
+
+1.        Public www HTTPS Request
+    user --------------------------> ELB
+
+2.
+    ELB will terminate the request
+    which is called SSL termination
+    
+    this will Less CPU cost in EC2
+
+3.       Provision and Maintain Cert
+    ELB <----------------------------> ACM
+
+4.       Private AWS HTTP Request
+    ELB --------------------------> server 
+
+SSL certificates is overall a pain to manually manage, 
+so ACM is great to leverage in your AWS infrastructure!
+
+
+===== ACM – Good to know ==========
+
+Possibility of creating public certificates
+    Must verify public DNS 
+    Must be issued by a trusted public certificate authority (CA)
+
+Possibility of creating private certificates
+    For your internal applications
+    You create your own private CA
+    Your applications must trust your private CA
+
+Certificate renewal:
+    - certificates generated provisioned by ACM :
+        Automatically done
+    - certificates manually uploaded :
+        must be manually renewed & re-uploaded
+
+ACM is a regional service
+    To use with a global application (multiple ALB for example), 
+        you need to issue an SSL certificate 
+        in each region where you application is deployed. 
+    You cannot copy certs across regions
+
+* But CloudFront is a global servers
+    for example , you can set up 
+        my CloudFront will use ap-northeast-1 ACM's certificates,
+        and it will be fine 

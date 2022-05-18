@@ -1,0 +1,70 @@
+# Page. 121
+
+===== S3 – Access Points ==========
+ 
+# be careful , this is not the vpc endpoint we talked on Before classes 
+
+
+Each Access Point gets its own DNS and policy to limit who can access it
+    A specific IAM user / group
+    One policy per Access Point => Easier to manage than complex bucket policies
+
+Can restrict to traffic from a specific VPC
+
+Access points are linked to a specific bucket 
+    (unique name per acct/region)
+    but can access multiple prefix
+
+
+
+----Diagram-----------
+                                        S3 bucket
+Finance    <------> Finance AP         +------------------------ 
+User/Group                  |          |  
+                            |--------->| [/finance/....]
+                            |          |
+Analytics  <------>   Analytics AP     |            
+User/Group                  |          |
+                            |--------->| [/sales/....]
+                            |          |
+Sales      <------>  Sales AP          |  # Simple Bucket Policy
+User/Group                             +------------------------
+
+Finance AP's Policy 
+    grand r/w access To a specific /finance prefix
+
+Sales AP's Policy 
+    grand r/w access To a specific /sales prefix
+
+Analytics AP's Policy 
+    grand read access To all the bucket
+
+
+
+
+
+===== Access Points with Shared Bucket ==========
+
+[VPC-A]
+EC2 <----------------> VPC Gateway <--->|
+     Endpoint Policy   Endpoint         |         
+                                        |
+[VPC-B]                                 |
+EC2 <----------------> VPC Gateway <--->|
+     Endpoint Policy   Endpoint         |
+                                        |    Central VPC
+[VPC-C]                                 |    -----------------
+EC2 <----------------> VPC Gateway <--->|--> Endpoint VPC Access Point
+     Endpoint Policy   Endpoint         |       |
+                                        |       | Access Point Policy
+[VPC-D]                                 |       |
+EC2 <----------------> VPC Gateway <--->|       +--->  S3 Bucket
+     Endpoint Policy   Endpoint         
+
+
+# S3 Bucket Policy will be like 
+    "Condition": {
+        "StringEquals":{
+            "s3:AccessPointNetworkOrigin": "VPC"
+        }
+    }
