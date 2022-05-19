@@ -17,3 +17,11 @@
 • Can protect against CryptoCurrency attacks (has a dedicated “finding” for it)
 
 
+
+                  --+
+VPC Flow Logs       |                                       
+CloudTrail Logs     |---- GuardDuty ----> CloudWatch Event                                    
+DNS Logs (AWS DNS)  |                       |
+EKS Audit Logs      |                       |---> SNS
+                  --+                       |---> Lambda
+
