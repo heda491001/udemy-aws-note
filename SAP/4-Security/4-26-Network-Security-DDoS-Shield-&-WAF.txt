@@ -17,14 +17,262 @@ Security Groups
             # means there is no allowed rule by default
             # so you need add rolls if you want to change 
         outbound all allowed
-            # means there is a roll allowed everything by default
-            # so you need remove rolls if you want to change  
     
 NACL (Network ACL):
-Attached at the subnet level 
-Are stateless (inbound and outbound rules apply for all traffic)
-Can only reference a CIDR range (no hostname)
-Default: allow all inbound, allow all outbound
-New  NACL: denies all inbound, denies all outbound
+    Attached at the subnet level 
+    Are stateless 
+        (inbound and outbound rules apply for all traffic)
+    Can only reference a CIDR range 
+        (no hostname)
+    Default: 
+        allow all inbound, 
+        allow all outbound
+    New  NACL: 
+        denies all inbound, 
+        denies all outbound
+
 Host Firewall
-Software based, highly customizable
+    Software based, 
+    highly customizable
+
+
+
+
+========== What’s a DDOS Attack? ===============================
+
+DDOS
+    Distributed Denial-of-Service
+
+
+kind of attack to basically shut down an instance 
+    by making it cannot accept any new traffic effectively
+    And so users cannot access your application anymore.
+
+how it like ?
+    
+    so you have application server
+    
+    there is an attacker
+        have a bunch of computers that are going to be masters.
+            (through some various techniques)
+        masters will create lots of bots 
+    
+    1. all the bots will get into request stuff from our application
+    2. so the application server is overwhelmed.and soon there will be a denial of service.
+    3. so your normal users cannot access your
+
+    It's very dangerous, but very common on the internet.
+
+
+
+
+
+========== Type of Attacks on your infrastructure ===============================
+Distributed Denial of Service (DDoS):
+    When your service is unavailable because it’s receiving too many requests
+    SYN Flood (Layer 4): 
+        send too many TCP connection requests
+    UDP Reflection (Layer 4): 
+        get other servers to send many big UDP requests
+    DNS flood attack: 
+        overwhelm the DNS so legitimate users can’t find the site
+    Slow Loris attack: (Layer 7)
+        a lot of HTTP connections are opened and maintained
+
+Application level attacks:
+    more complex, more specific (HTTP level)
+    Cache bursting strategies: 
+        overload the backend database by invalidating cache
+    it just depends on the application ,
+        and kind of security hole you app may have
+
+
+
+
+========== DDoS Protection on AWS ===============================
+
+AWS Shield Standard: 
+    protects against DDoS attack for your website and applications, 
+    for all customers at no additional costs
+
+AWS Shield Advanced: 
+    24/7 premium DDoS protection
+
+AWS WAF: 
+    WAF - web application Firewall
+    Filter specific requests based on rules
+    # WAF is more against application level protections
+    # Base on rules filter can also help you survive a DDoS attack
+
+
+CloudFront and Route 53:
+    # by default , Shield will be enabled
+    Availability protection using global edge network
+        protect the DDoS , and traffic will never really makes it through to you core app in one region
+    Combined with AWS Shield, provides DDoS attack mitigation at the edge
+
+Be ready to scale – leverage AWS Auto Scaling
+    so you app will be more flexable , can take more access
+    will be more expensive for attacker to DDoS
+        which will be also more expensive for you if they attack .....
+    anyway , at least it will protect you users' experience from DDoS
+      
+Separate static resources (S3 / CloudFront) from dynamic ones (EC2 / ALB)
+    
+Read the whitepaper for details:
+https://d1.awsstatic.com/whitepapers/Security/DDoS_White_Paper.pdf
+
+
+
+========== Sample Reference Architecture ===============================
+
+          Shield       Shield          Shield
+user ---> Route53 ---> CloudFront --->   ALB ---> ASG---|--- ec2 
+                      Distribution                      |--- ec2
+                           |                            |--- ec2 
+                           +---AWS WAF
+
+
+# refer below
+https://aws.amazon.com/answers/networking/aws-ddos-attack-mitigation/
+
+
+
+========== AWS Shield ===============================
+
+AWS Shield Standard:
+    Free service that is activated for every AWS customer
+    Provides protection from attacks such as 
+        SYN/UDP Floods, 
+        Reflection attacks 
+        and other layer 3/layer 4 attacks
+
+AWS Shield Advanced:
+    Optional DDoS mitigation service 
+        - ($3,000 per month per organization)
+    Protect against more sophisticated attack on :
+        Amazon EC2, 
+        Elastic Load Balancing (ELB), 
+        Amazon CloudFront, 
+        AWS Global Accelerator, 
+        Route 53
+    24/7 access to AWS DDoS response team (DRP)
+    Protect against higher fees during usage spikes due to DDoS
+        # just like we mentioned above 
+            if you have your app auto-scale, 
+            it may course lots of money while suffering from DDoS attack
+
+         
+
+
+========== AWS WAF – Web Application Firewall ===============================
+
+Protects your web applications from common web exploits (Layer 7)
+
+Deploy on 
+    - Application Load Balancer (localized rules)
+    -  API Gateway 
+        (rules running at the regional or edge level)
+    -  CloudFront 
+        (rules globally on edge locations)
+        Used to front other solutions: 
+            CLB, EC2 instances, custom origins, S3 websites
+    - AppSync 
+        (protect your GraphQL APIs)
+
+WAF is not for DDoS protection
+
+Define Web ACL (Web Access Control List):
+    Rules can include 
+        - IP addresses 
+        - HTTP headers
+        - HTTP body
+        - URI strings
+    Protects from common attack 
+        - SQL injection and Cross-Site Scripting (XSS)
+    Size constraints, Geo match
+    Rate-based rules 
+        (to count occurrences of events)
+    
+
+
+
+========== AWS WAF – Managed Rules ===============================
+
+Library of over 190 managed rules
+
+Ready-to-use rules that are managed by AWS and AWS Marketplace Sellers
+
+we have :
+    - Baseline Rule Groups
+        general protection from common threats
+        such as
+            - AWSManagedRulesCommonRuleSet
+            - AWSManagedRulesAdminProtectionRuleSet
+             ...
+    - Use-case Specific Rule Groups 
+        protection for many AWS WAF use cases
+        such as 
+            - AWSManagedRulesSQLiRuleSet
+            - AWSManagedRulesWindowsRuleSet
+            - AWSManagedRulesPHPRuleSet
+            - AWSManagedRulesWordPressRuleSet
+             ...
+    - IP Reputation Rule Groups 
+        block requests based on source (e.g., malicious IPs)
+        such as
+            - AWSManagedRulesAmazonIpReputationList
+            - AWSManagedRulesAnonymousIpList
+    - Bot Control Managed Rule Group 
+        block and manage requests from bots
+        such as 
+            - AWSManagedRulesBotControlRuleSet
+
+
+
+========== WAF - Web ACL – Logging ===============================
+
+
+You can send your logs to an:
+    - Amazon CloudWatch Logs log group 
+        5 MB per second
+    - Amazon Simple Storage Service (Amazon S3) bucket 
+        5 minutes interval
+    - Amazon Kinesis Data Firehose 
+        limited by Firehose quotas
+
+AWS WAF                                     Kinesis Firehose Destinations
+    |                                       ------------------------------
+    |---> Kinesis Data Firehose  -------+----> Amazon S3
+    |                                   |   
+    |---> S3 Bucket                     +----> Amazon Redshift
+    |                                   |
+    |---> CloudWatch Logs               +----> Amazon OpenSearch
+                                        |   
+                                            ...
+
+
+
+========== AWS Firewall Manager ===============================
+
+Manage rules in all accounts of an AWS Organization
+
+Common set of security rules
+
+    - WAF rules 
+        for  
+            Application Load Balancer
+            API Gateways
+            CloudFront
+            
+    - AWS Shield Advanced 
+        for
+            ALB
+            CLB
+            Elastic IP
+            CloudFront
+
+    Security Groups 
+        for 
+            EC2 
+            ENI resources in VPC

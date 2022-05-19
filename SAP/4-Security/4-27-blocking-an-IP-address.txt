@@ -1,0 +1,139 @@
+# Page. 133
+
+======== Blocking an IP address ===============
+
+                        VPC
+            ------------------------------------
+            |
+           NACL     +------Security Group----
+            |       |            
+client ----------------> EC2
+            |       |       Instance Public IP
+            |       |           + 
+            |       |       Optional Firewall Software in EC2
+
+# if we want to block some IPs
+the first defense will be NACL 
+    in VPC (Layer 3/4)
+    just make some diny rules , IP will be block
+    very cheap , very simple , very quick
+
+secound will be Security Group
+    # SG only have allow rules , no deny
+    you need to know all the IP may access to you ec2 , and allow them only 
+    so it's not as handy as NACL
+
+then you can just install some Firewall Software yourself on ec2
+
+
+
+======== Blocking an IP address – with an ALB ===============
+
+                    VPC
+        +-----------------------------------
+        |
+        NACL    +-- SG ---------+   +-- SG ----
+        |       |               |   |
+client ------------> ALB --------------> EC2
+        |       |   Connection  |   |   private IP
+        |       |   Termination |   |
+        |       |               |   |
+        
+ALB has a feature call <Connection Termination>
+    means 
+        terminate the connection from user
+        start a new connection to ec2 
+     
+
+so for ALB , just like the first diagram
+    defense will be
+        NACL --> ALB's SG
+
+and for the EC2
+    we can have private IP
+    set the SG only allow access from ALB
+    # which should be safer
+
+
+
+======== Blocking an IP address – with an NLB ===============
+
+                    VPC
+        +-----------------------------------
+        |
+        NACL                        +-- SG ----
+        |                           |
+client ------------> NLB --------------> EC2
+        |    traffics go through    |   private IP
+        |       no SG for NLB       |
+        |                           |
+
+# a little complicatied
+
+NLB dont have SG 
+
+all the traffics from client 
+    will be passed through NLB to EC2
+    even EC2 have a private IP
+
+because NLB do not use Connection Termination
+    ec2 can see client's IP 
+
+    that you can only allow some IP just like the first diagram's EC2
+
+
+but if you want to deny like only one IP 
+    the only choice will be NACL
+
+
+======== Blocking an IP address – ALB + WAF ===============
+
+                   VPC
+        +-----------------------------------
+        |
+        NACL    +-- SG ---------+   +-- SG ----
+        |       |               |   |
+client ------------> ALB --------------> EC2
+        |       |     |         |   |   private IP
+        |       |     |         |   |
+                      +--> WAF  
+                    IP address filtering
+
+# back to the case using ALB
+we can add a WAF to ALB
+    
+not like the NACL working before you ALB
+    it's service installed to you ALB
+
+we can have a bunch of rules on WAF
+    which will be one more line of defense , make it safer
+
+
+ 
+======== Blocking an IP address – ALB + CloudFront + WAF ===============
+
+                      VPC
+                  +-----------------------------------
+                  |
+client            NACL    +-- SG ---------+   +-- SG ----
+ |                |       |               |   |
+ +--> CloudFront ------------> ALB --------------> EC2
+          |       |       |               |   |   private IP
+          |        
+          +--> WAF             
+
+# in advance , if we use a CloudFront before the ALB
+
+request from CloudFront to ALB will use the public IPs of CloudFront
+means the NACL, SG here will NOT be helpful at all
+
+so what can we do ?
+    
+    1. CloudFront Geo Restriction 
+        # which is a CloudFront's feature
+        help us to restrict the CloudFront access by Geo
+            for example , deny all the other countries access
+    
+    2. use the WAF
+        it will be installed on CloudFront and perform IP filtering
+    
