@@ -1,0 +1,26 @@
+# Page 145
+
+====== Solution Architecture on AWS ==========
+# quick, simple diagram for the web services using AWS , in a very high-level
+
+       +---> DNS Layer
+       |     [Route53]
+user --+
+       |
+       +---> CDN Layer   --------------------------------> Static Assets Layer (storage)
+       |     [CloudFront]                            +---> [S3, Glacier] 
+       |                                             |
+       |                                             +---> storage Layer
+       |                                             |     [EBS,EFS,Instance Store]
+       +---> Web Layer   ---> Compute Layer----------+
+             [CLB, ALB NLB]   [EC2, ASG]             |
+             [API Gateway]    [Lambda]               +---> Caching/Session Layer
+             [Elastic IP]     [ECS,Farget,Batch,EMR] |     [ElasticCache,DAX,DynamoDB,RDS]
+                                                     |
+                                                     +---> Database Layer
+                                                     |     [RDS,Aurora,DynamoDB]
+                                                     |     [ElasticSearch,S3,Redshift]
+                                                     |
+                                                     +---> Decoupling Orchestration Layer       
+                                                           [SQS,SNS,Kinesis]
+                                                           [Amazon MQ,Step Functions]

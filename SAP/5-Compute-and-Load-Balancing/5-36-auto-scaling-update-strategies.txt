@@ -1,0 +1,72 @@
+Page 169 
+
+
+==== Auto Scaling – Updating an application ====================================
+
+[diagram]
+                            ASG
+                        ------------------
+Client <----> ALB <---->  EC2 Instances
+
+                            using a Launch Template
+
+
+==== Auto Scaling – Updating an application ====================================
+
+(1)
+
+ASG   (V1 and V2 in same target group)
+ |      
+ +---> [EC2 instances Launch Template V1] ----->|
+ |                                              |---> ALB --->
+ +---> [EC2 instances Launch Template V2] ----->|
+
+
+(2)
+
+Split traffic betwenen TG
+
+ASG 1 [EC2 instances Launch Template V1] ----->|
+                                               |---> ALB --->
+ASG 2 [EC2 instances Launch Template V2] ----->|
+
+(3)
+        DNS Query
+Client -----------> Rout53 (CNAME Weighted record)
+    |
+    +---+-----> ALB 1 ----> ASG 1 
+        |                   [EC2 instances Launch Template V1]
+        | Client based LB
+        |
+        +-----> ALB 2 ----> ASG 2 
+                    +-----> [EC2 instances Launch Template V2]
+                    |
+Test                |  Separate manual testing Load testing        
+Client -------------+
+
+
+
+========================================
+
+========================================
+
+========================================
+
+========================================
+
+========================================
+
+========================================
+
+========================================
+
+========================================
+
+========================================
+
+========================================
+
+========================================
+
+========================================
+

@@ -1,0 +1,168 @@
+# Page 148
+
+==== EC2 Instance Types – Main ones ===========================================
+
+R: 
+    applications that needs a lot of RAM 
+    – in-memory caches
+
+C: 
+    applications that needs good CPU 
+    – compute / databases
+
+M: 
+    applications that are balanced (think “medium”) 
+    – general / web app
+
+I: 
+    applications that need good local I/O (instance storage) 
+    – databases
+
+G: 
+    applications that need a GPU 
+    – video rendering / machine learning
+
+T2 / T3: 
+    burstable instances (up to a capacity)
+
+T2 / T3 - unlimited:
+    unlimited burst
+
+Real-world tip: use https://www.ec2instances.info
+
+
+
+==== EC2 - Placement Groups ===========================================
+
+Control the EC2 Instance placement strategy using placement groups
+
+Group Strategies:
+    Cluster
+        clusters instances into a low-latency group in a single Availability Zone
+    Spread
+        spreads instances across underlying hardware (max 7 instances per group per AZ) 
+            – critical applications
+    Partition
+        spreads instances across many different partitions (which rely on different sets of racks) within an AZ.
+        Scales to 100s of EC2 instances per group (Hadoop, Cassandra,Kafka)
+
+You can move an instance into or out of a placement group
+    first need to stop it
+    then modify-instance-placement , using the CLI
+    then start your instance
+
+
+
+
+==== Placement Groups - Cluster ===========================================
+
+All the instances deployed in the Same Rack , Same AZ
+
+Pros: 
+    Great network 
+        (10 Gbps bandwidth between instances with Enhanced Networking enabled - recommended)
+
+Cons: 
+    If the rack fails, all instances fails at the same time
+
+Use case:
+    Big Data job that needs to complete fast
+    Application that needs extremely low latency and high network throughput
+
+
+
+
+==== Placement Groups - Spread ===========================================
+
+instance will spreads to different AZ and hardware as much as possible
+# the safest placement strategy
+
+Pros:
+    Can span across Availability Zones (AZ)
+    Reduced risk is simultaneous failure
+    EC2 Instances are on different physical hardware
+
+Cons:
+    Limited to 7 instances per AZ per placement group
+
+Use case:
+    Application that needs to maximize high availability
+    Critical Applications where each instance must be isolated from failure from each other
+
+
+==== Placement Groups - Partition ===========================================
+
+Instances will devided into groups (partitions)
+
+Up to 7 partitions per AZ
+Up to 100s of EC2 instances
+
+The instances in a partition do not share racks with the instances in the other partitions
+
+A partition failure can affect many EC2 but won’t affect other partitions
+
+EC2 instances get access to the partition information as metadata
+
+Use cases: 
+    HDFS, HBase,
+    Cassandra, Kafka
+
+
+==== EC2 Instance Launch Types ===========================================
+
+On Demand Instances: 
+    short workload, predictable pricing, reliable
+
+Spot Instances: 
+    short workloads, for cheap, can lose instances (not reliable)
+
+Reserved: (MINIMUM 1 year)
+    Reserved Instances: 
+        long workloads
+    Convertible Reserved Instances: 
+        long workloads with flexible instances
+    Dedicated Instances: 
+        no other customers will share your hardware
+    Dedicated Hosts: 
+        book an entire physical server, control instance placement
+        Great for software licenses that operate at the core, or CPU socket level
+        Can define host affinity so that instance reboots are kept on the same host
+
+
+
+
+==== EC2 included metrics ===========================================
+
+CPU: 
+    CPU Utilization + Credit Usage / Balance
+Network: 
+    Network In / Out
+Status Check:
+    Instance status = check the EC2 VM
+    System status = check the underlying hardware
+Disk: 
+    Read / Write for Ops / Bytes (only for instance store)
+
+* RAM is NOT included in the AWS EC2 metrics
+
+
+==== EC2 Instance Recovery ===========================================
+
+Status Check:
+    Instance status = check the EC2 VM
+    System status = check the underlying hardware
+
+                monitor                
+EC2 Instance <--------------------- CloudWatch Alarm 
+    |                                       |                   alert
+    |<---------------------------- [StatusCheckFailed_System] --------> SNS Topic
+   process [EC2 Instance Recovery]      is Dedicated
+
+
+if using the EC2 inetance Recovery ,it will have Same :
+    Private IP
+    Public IP
+    Elastic IP
+    metadata
+    placement group
+
