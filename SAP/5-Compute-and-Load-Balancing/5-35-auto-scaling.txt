@@ -2,92 +2,156 @@ Page 162
 
 ==== Auto Scaling Groups – Dynamic Scaling Policies =============================================
 
-• Target Tracking Scaling
-• Most simple and easy to set-up
-• Example: I want the average ASG CPU to stay at around 40%
-• Simple / Step Scaling
-• When a CloudWatch alarm is triggered (example CPU > 70%), then add 2 units
-• When a CloudWatch alarm is triggered (example CPU < 30%), then remove 1
-• Scheduled Actions
-• Anticipate a scaling based on known usage patterns
-• Example: increase the min capacity to 10 at 5 pm on Fridays
+Target Tracking Scaling
+    Most simple and easy to set-up
+    Example: 
+        I want the average ASG CPU to stay at around 40%
+
+Simple / Step Scaling
+    for example :
+        When a CloudWatch alarm is triggered 
+            (example CPU > 70%), then add 2 units
+        When a CloudWatch alarm is triggered 
+            (example CPU < 30%), then remove 1
+
+Scheduled Actions
+    Anticipate a scaling based on known usage patterns
+    Example: 
+        increase the min capacity to 10 at 5 pm on Fridays
 
 
 
 ===== Auto Scaling Groups – Predictive Scaling ============================================
 
-• Predictive scaling: 
+Predictive scaling: 
     continuously forecast load and schedule scaling ahead
 
+    # AWS will analyze your load using like machine-learning 
+      then set up automatically scaling actions in advance
+
+    # so it will be effective 
+        if your work load do have like patterns 
+        but you didnt know 
 
 
 
 ===== Good metrics to scale on ============================================
 
-• CPUUtilization: Average CPU
-utilization across your instances
-• RequestCountPerTarget: to make sure
-the number of requests per EC2
-instances is stable
-• Average Network In / Out (if you’re
-application is network bound)
-• Any custom metric (that you push
-using CloudWatch)
+CPUUtilization: 
+    Average CPU utilization across your instances
 
+RequestCountPerTarget: 
+    to make sure the number of requests per EC2 instances is stable
 
+Average Network In / Out 
+    (if you’re application is network bound)
 
+Any custom metric 
+    (that you push using CloudWatch)
 
+    
 ===== Auto Scaling – Good to know ============================================
 
-• Spot Fleet support (mix on Spot and On-Demand instances)
-• Lifecycle Hooks:
-• Perform actions before an instance is in service, or before it is terminated
-• Examples: cleanup, log extraction, special health checks
-• To upgrade an AMI, must update the launch configuration / template
-• Then terminate instances manually (CloudFormation can help)
-• Or use EC2 Instance Refresh for Auto Scaling
+Spot Fleet support 
+    (mix on Spot and On-Demand instances)
+
+Lifecycle Hooks:
+    Perform actions before an instance is in service, 
+    or before it is terminated
+    Examples: 
+        cleanup, log extraction, special health checks
+
+To upgrade an AMI, must update the launch configuration / template
+    Then terminate instances manually (CloudFormation can help)
+    Or use EC2 Instance Refresh for Auto Scaling
 
 
 
 
 ===== Auto Scaling – Instance Refresh ============================================
 
-• Goal: update launch template
-and then re-creating all EC2
-instances
-• For this we can use the native
-feature of Instance Refresh
-• Setting of minimum healthy
-percentage
-• Specify warm-up time (how long
-until the instance is ready to use)
+Goal: 
+    update launch template and then re-creating all EC2 instances
+
+
+we can use the native feature of Instance Refresh
+
+Setting of minimum healthy percentage
+    # like the rolling update used in ElasticBeanstalk
+
+Specify warm-up time 
+    (how long until the instance is ready to use)
 
 
 
 ===== Auto Scaling – Scaling Processes ============================================
 
-• Launch: Add a new EC2 to the group, increasing the capacity
-• Terminate: Removes an EC2 instance from the group, decreasing its capacity.
-• HealthCheck: Checks the health of the instances
-• ReplaceUnhealthy: Terminate unhealthy instances and re-create them
-• AZRebalance: Balancer the number of EC2 instances across AZ
-• AlarmNotification: Accept notification from CloudWatch
-• ScheduledActions: Performs scheduled actions that you create.
-• AddToLoadBalancer: Adds instances to the load balancer or target group
-• InstanceRefresh: Perform an instance refresh
-• We can suspend these processes!
+- Launch: 
+    Add a new EC2 to the group, increasing the capacity
 
+- Terminate: 
+    Removes an EC2 instance from the group, decreasing its capacity.
+
+- HealthCheck: 
+    Checks the health of the instances
+
+- ReplaceUnhealthy: 
+    Terminate unhealthy instances and re-create them
+
+- AZRebalance: 
+    Balancer the number of EC2 instances across AZ
+
+- AlarmNotification: 
+    Accept notification from CloudWatch
+
+- ScheduledActions: 
+    Performs scheduled actions that you create.
+
+- AddToLoadBalancer: 
+    Adds instances to the load balancer or target group
+
+- InstanceRefresh: 
+    Perform an instance refresh
+
+
+We can suspend these processes!
+    for example :
+        you don't want to terminate the unhealthy instances ,
+        because you need to check inside for troubleshooting and debug
 
 
 ===== Auto Scaling – Health Checks ============================================
 
-• Health checks available:
-• EC2 Status Checks
-• ELB Health Checks (HTTP)
-• Custom Health Checks – send
-instance’s health to an ASG using AWS
-CLI or AWS SDK (set-instance-health)
-• ASG will launch a new instance after
-terminating an unhealthy one
-• Make sure the health check is simple
-and checks the correct thing
+Health checks available:
+    EC2 Status Checks
+    ELB Health Checks (HTTP)
+    Custom Health Checks
+        send instance’s health to an ASG 
+        using AWS CLI or AWS SDK (set-instance-health)
+
+ASG will launch a new instance after terminating an unhealthy one
+
+Make sure the health check 
+    is simple 
+    and checks the correct thing
+
+
+# checks a simple route on your EC2 instance
+good example :
+    check /health-server
+        refering to some static resources
+
+
+# check a route that does something quite heavy
+Bad example :
+    check the /number-customers
+        do a db call and count the number of customers 
+
+    so this is bad example
+    1. waste lots of resources
+    2. if the db has some problems(eg. connect fail) ,
+       it will be unhealthy even the instance is fine ,
+       and Replace all the instances over again,
+       which also won't help at all
+
+       

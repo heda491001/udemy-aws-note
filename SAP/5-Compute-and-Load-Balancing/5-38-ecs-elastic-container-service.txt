@@ -4,14 +4,19 @@ Page 175
 ==== What is Docker? =========================
 
 Docker is a software development platform to deploy apps
+
 Apps are packaged in containers that can be run on any OS
+
 Apps run the same, regardless of where they’re run
-Any machine (no compatibility issues, predictable behavior)
-Less work
-Easier to maintain and deploy
-Works with any language, any OS, any technology
+    Any machine (no compatibility issues, predictable behavior)
+    Less work
+    Easier to maintain and deploy
+    Works with any language, any OS, any technology
+
 Control how much memory / CPU is allocated to your container
+
 Scale containers up and down very quickly (seconds)
+
 More efficient than Virtual machines
 
 
@@ -19,121 +24,223 @@ More efficient than Virtual machines
 ==== Docker Containers Management on AWS ========================================
 
 To manage containers, we need a container management platform
+
 Amazon Elastic Container Service (Amazon ECS)
-Amazon’s own container platform
+    Amazon’s own container platform
+
 Amazon Elastic Kubernetes Service (Amazon EKS)
-Amazon’s managed Kubernetes (open source)
+    Amazon’s managed Kubernetes (open source)
+
 AWS Fargate
-Amazon’s own Serverless container platform
-Works with ECS and with EKS
+    Amazon’s own Serverless container platform
+    Works with ECS and with EKS
 
 
 
 ==== Amazon ECS – Use cases ========================================
 
 Run Microservices
-Run multiple Docker containers on the same machine
-Easy Service Discovery features to enhance communication
-Direct integration with Application Load Balancer and Network Load Balancer
-Auto Scaling capability
+    Run multiple Docker containers on the same machine
+    Easy Service Discovery features to enhance communication
+    Direct integration with Application Load Balancer and Network Load Balancer
+    Auto Scaling capability
+
 Run Batch Processing / Scheduled Tasks
-Schedule ECS tasks to run on On-demand / Reserved / Spot instances
+    Schedule ECS tasks to run on On-demand / Reserved / Spot instances
+
 Migrate Applications to the Cloud
-Dockerize legacy applications running on-premises
-Move Docker containers to run on Amazon ECS
+    Dockerize legacy applications running on-premises
+    Move Docker containers to run on Amazon ECS
 
 
 ==== Amazon ECS – Concepts ========================================
 
-ECS Cluster – logical grouping of EC2 instances
-ECS Service – defines how many tasks should run and how they should
-be run
-Task Definitions – metadata in JSON form to tell ECS how to run a
-Docker container (image name, CPU, RAM, ...)
-ECS Task – an instance of a Task Definition, a running Docker container(s)
+ECS Cluster 
+    – logical grouping of EC2 instances
+ECS Service 
+    – defines how many tasks should run and how they should be run
+
+Task Definitions 
+    – metadata in JSON form to tell ECS how to run a Docker container 
+        (image name, CPU, RAM, ...)
+
+ECS Task 
+    – an instance of a Task Definition, a running Docker container(s)
+
 ECS IAM Roles
-EC2 Instance Profile – used by the EC2 instance (e.g., make API calls to ECS, send
-logs, ...)
-ECS Task IAM Role – allow each task to have a specific role (e.g., make API calls to
-S3, DynamoDB, ...)
+    EC2 Instance Profile 
+        – used by the EC2 instance 
+            (e.g., make API calls to ECS, send logs, ...)
+    ECS Task IAM Role 
+        – allow each task to have a specific role
+            (e.g., make API calls to S3, DynamoDB, ...)
 
 
+            
+    +---instance_1----+-----ECS_Task_1
+    |       :         |         :
+    |       :         +----------------------ECS_Task_2
+ASG-+       :                   :                 :
+    |       :                   :                 :
+    +---instance_2----+-----ECS_Task_1            :
+            :           |       :                 :
+            :           +----------------------ECS_Task_2
+            :                   :                 :
+            :                   :                 :
+[EC2 instance Profile]   [Task IAM Role 1]    [Task IAM Role 2]
+  |                             |               
+  +--> ECS                      +--> S3
+  +--> CloudWatch logs 
 
-==== Amazon ECS - Concepts ====================================
+
+ #  ECS is a service for Containers management
+    the platform to actually perform container 
+        will still be a fleet of ec2 Instances 
+        (or you can run in on the Fargate)
+
+ #  the instances which running containers on them 
+        will under a ASG , for scaling automatically
+        and the need a [EC2 instance Profile] to have the access to 
+            such as ECS , or CloudWatch Logs
+    
+ #  ECS Task 
+        (kind of like the [pod] in k8s)
+        
+        is the unit for ECS management
+            can have several Containers 
+            containers can spread of several instances (for HA)
+
+        Task has a [ECS Task IAM Role] 
+            for the container in the task to access AWS services
+            such as : S3, EFS, RDS
 
 
 ==== Amazon ECS – ALB Integration =============================
+
 We get Dynamic Port Mapping
-Allows you to run multiple
-instances of the same application
-on the same EC2 instance
-The ALB finds the right port on
-your EC2 Instances
+
+Allows you to 
+    run multiple instances 
+    of the same application on 
+    the same EC2 instance
+
+The ALB finds the right port on your EC2 Instances
+
 Use cases:
-Increased resiliency even if running
-on one EC2 instance
-Maximize utilization of CPU / cores
-Ability to perform rolling upgrades
-without impacting app uptime
+    Increased resiliency even if running on one EC2 instance
+    Maximize utilization of CPU / cores
+    Ability to perform rolling upgrades without impacting app uptime
 
-
+ #  (just like docker & Kubernetes)
+    Containers in the ECS Task  , 
+        have mapping the container ports to the EC2 instances' ports
+        so they can provide service out side
+    
+ #  so these port can change all the time
+    
+ #  ALB have integrated with ECS 
+        the can figure out these port on instance , base on Task
+        then they can forward request to them
+            just like a load-balancer for servers
 
 
 ==== AWS Fargate =========================
+
 Launch Docker containers on AWS
+
 You do not provision the infrastructure
-(no EC2 instances to manage)
+    (no EC2 instances to manage)
+
 It’s all serverless!
+
 You create task definitions
-AWS runs containers for you based on
-the CPU / RAM you need
-To scale, just increase the number of
-tasks. Simple! No more EC2 instances 
+
+AWS runs containers for you based on the CPU / RAM you need
+
+To scale, just increase the number of tasks. Simple! No more EC2 instances 
 
 
 
 ==== Amazon ECS – Security & Networking ===============
-You can inject secrets and configurations as Environment Variables into
-running Docker containers
-Integration with SSM Parameter Store and Secrets Manager
+
+inject secrets and configurations as env Variables into running Docker containers
+
+Integration with 
+    SSM Parameter Store 
+    Secrets Manager
+
 ECS Tasks Networking
-none – no network connectivity, no port mappings
-bridge – uses Docker’s virtual container-based network
-host – bypass Docker’s network, uses the underlying host network interface
-awsvpc
-Every tasks launched on the instance gets its own ENI and a private IP address
-Simplified networking, enhanced security, Security Groups, monitoring,VPC Flow Logs
-Default mode for Fargate tasks
+    - none
+        no network connectivity, no port mappings
+    - bridge
+        uses Docker’s virtual container-based network
+    - host
+        bypass Docker’s network, uses the underlying host network interface
+    - awsvpc
+        Every tasks launched on the instance gets its own ENI and a private IP
+        * basically have all vpc's features
+            Simplified networking, 
+            enhanced security, 
+            Security Groups, 
+            monitoring,
+            VPC Flow Logs
+        Default mode for Fargate tasks
 
 
 ==== Amazon ECS – Service Auto Scaling ====================================
+
 Automatically increase/decrease the desired number of tasks
+
 Amazon ECS leverages AWS Application Auto Scaling
+
 CPU and RAM is tracked in CloudWatch at the ECS Service level
-Target Tracking – scale based on target value for a specific CloudWatch metric
-Step Scaling – scale based on a specified CloudWatch Alarm
-Scheduled Scaling – scale based on a specified date/time (predictable changes)
+
+ #  just like 
+Target Tracking
+    scale based on target value for a specific CloudWatch metric
+Step Scaling
+    scale based on a specified CloudWatch Alarm
+Scheduled Scaling
+    scale based on a specified date/time (predictable changes)
+
+
 ECS Service Auto Scaling (task level) ≠ EC2 Auto Scaling (EC2 instance level)
 Fargate Auto Scaling is much easier to setup (because Serverless)
 
 
 ==== Amazon ECS – Spot Instances ======================================
+
 ECS Classic (EC2 Launch Type)
-Can have the underlying EC2 instances as Spot Instances (managed by an ASG)
-Instances may go into draining mode to remove running tasks
-Good for cost savings, but will impact reliability
+    Can have the underlying EC2 instances as Spot Instances (managed by an ASG)
+    Instances may go into draining mode to remove running tasks
+    Good for cost savings, but will impact reliability
+
 AWS Fargate
-Specify minimum of tasks for on-demand baseline workload
-Add tasks running on FARGATE_SPOT for cost-savings (can be reclaimed by AWS)
-Regardless of On-demand or Spot, Fargate scales well based on load
+    # also can run on spot instance
+        (or should we say spot mode)
+    Specify minimum of tasks for on-demand baseline workload
+    Add tasks running on FARGATE_SPOT for cost-savings 
+        can be reclaimed by AWS just like spot Instance
+    Regardless of On-demand or Spot, Fargate scales well based on load
 
 
 ==== Amazon ECR - Elastic Container Registry ===========================
+
 Store and manage Docker images on AWS
-Private and Public repository (Amazon ECR
-Public Gallery https://gallery.ecr.aws)
+    # like a docker hub
+
+Private and Public repository 
+    (Amazon ECR Public Gallery https://gallery.ecr.aws)
+
 Fully integrated with ECS
+
 Access is controlled through IAM
-(permission errors => check policy)
-Supports image vulnerability scanning,
-versioning, image tags, image lifecycle, ...
+    if you have a permission errors => check policy
+
+Supports 
+    image vulnerability scanning
+        # using aws inspect ?
+    versioning 
+    image tags 
+    image lifecycle 
+    ...

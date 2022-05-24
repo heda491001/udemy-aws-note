@@ -1,0 +1,311 @@
+ #  Page 195
+
+==== Lambda – Synchronous Invocations ========================
+
+Synchronous: CLI, SDK, API Gateway
+    Results is returned right away
+    Error handling must happen client side 
+        # you can 
+            retries
+            exponential backoff
+            etc...
+        it's up to you
+
+        invoke
+SDK | ---------> | Lambda
+    | <--------- |
+       Response
+
+           invoke                 proxy
+client | ---------> |   API   | --------> | Lambda
+       | <--------- | Gateway | <-------- |
+          Response               Response
+
+
+
+
+==== Lambda – Asynchronous Invocation ===============
+
+S3(event), SNS, CloudWatch Events...
+
+Lambda attempts to retry on errors 
+    (3 tries total)
+
+Make sure the processing is idempotent 
+    (in case of retries)
+
+Can define a DLQ 
+    (dead-letter queue) 
+    – SNS or SQS 
+    – for failed processing
+                                retries
+                           +--------+
+      New file event       |        |
+[S3] -----------------> [Lambda] ---+
+      async invocation     |  
+                           +-----> [SQS]
+                         DLQ for
+                      failed processing
+
+
+
+
+==== Lambda – Event Source Mapping ===============
+
+Sources:
+    Kinesis Data Streams, SQS, SQS FIFO
+    DynamoDB Streams, Amazon MQ, Apache Kafka
+
+Records need to be polled from the source 
+    (common denominator)
+
+All records 
+    respect ordering properties EXCEPT for SQS standard
+
+function returns an error
+    the entire batch is reprocessed until successKinesis,
+        DynamoDB Stream: 
+            stop shard processing
+        SQS FIFO: 
+            stop, unless a SQS DLQ has been defined
+        Need to make sure your Lambda function is idempotent
+
+  Source
+---------------------+
+Kinesis Data Stream  |
+Amazon MSK           | batch                        invoke with batch
+Amazon SQS           |--------->        Lambda          ---------> Lambda function 
+DynamoDB             |<--------- (Event Source Mapping)
+Amazon MQ            | poll
+Apache Kafka         |
+                     |  
+
+
+==== Lambda – Destinations ================================
+Nov 2019: 
+    Can configure to send result to a destination
+
+Asynchronous invocations 
+- can define destinations for successful and failed event:
+    Amazon SQS
+    Amazon SNS
+    AWS Lambda
+    Amazon EventBridge bus
+
+Note: 
+    AWS recommends you use destinations instead of DLQ now 
+    (but both can be used at the same time)
+
+Event Source mapping: 
+    for discarded event batches, it can be sent to 
+        Amazon SQS
+        Amazon SNS
+
+Note: 
+    you can send events to a DLQ directly from SQS
+
+<Destinations for Asynchronous Invocation> -- diagram
+https://docs.aws.amazon.com/lambda/latest/dg/invocation-async.html
+
+<Event Source Mapping with Kinesis Stream> -- diagram
+https://docs.aws.amazon.com/lambda/latest/dg/invocation-eventsourcemapping.html
+
+
+
+
+
+==== AWS Lambda Versions =========================
+
+When you work on a Lambda function, we work on [$LATEST] version 
+    * [$LATEST] is a version 
+    
+When we’re ready to publish a Lambda function, we create a version
+    Version = code + configuration 
+        (nothing can be changed - immutable)
+    Versions are immutable
+    Versions have increasing version numbers
+    Versions get their own ARN (Amazon Resource Name)
+
+    Each version of the lambda function can be accessed 
+
+[diagram]
+
+$LATEST  ---+------> V1 (Immutable)
+(mutable)   |
+            |
+            +------> V2 (Immutable)
+
+
+==== AWS Lambda Aliases ==============
+
+Aliases are ”pointers” to Lambda function versions
+
+We can define a “dev”, ”test”, “prod” aliases 
+    point at different lambda versions
+
+Aliases are mutable
+
+Alias also support Weighted alias
+    You can shift traffic between two versions, 
+    based on weights (%) that you assign
+
+Aliases enable Blue / Green deployment 
+    by assigning weights to lambda functions
+
+Aliases enable stable configuration of our event triggers / destinations
+
+Aliases have their own ARNs
+
+Aliases cannot reference aliases
+
+[diagram]
+Users <-+----> Dev Alias -----> $LATEST
+        |      (mutable)        (mutable)
+        |                       
+        +----> PROD Alias --+---95%--->   V1
+        |       (mutable)   |           (immutable)
+        |                   |
+        |                   +----5%--->   V2
+        +----> TEST Alias-------------> (immutable)
+                (mutable)
+
+
+
+==== AWS Lambda Aliases with API Gateway ===============
+
+
+API Gateway ----> PROD Alias --+---95%--->   V1
+[Prod Stage]                   |           
+                               |
+                               +----5%--->   V2
+API Gateway ----> TEST Alias-------------> 
+[Test Stage]    
+
+API Gateway ----> Dev Alias -------------> $LATEST
+[Dev Stage] 
+
+
+ #  No changes on API Gateway side 
+        the access point to user is the same
+    we only 
+        need to create version 
+        and set the Alias properly
+    
+
+
+==== Lambda & CodeDeploy =======
+
+[CodeDeploy] can help you automate traffic shift for Lambda aliases
+
+Feature is integrated within the SAM framework
+
+ #  you can have below three mode to shift traffics
+
+1. Linear : 
+    grow traffic every N minutes until 100%
+        Linear10PercentEvery3Minutes
+        Linear10PercentEvery10Minutes
+
+2. Canary: 
+    try X percent then 100%
+        Canary10Percent5Minutes
+        Canary10Percent30Minutes
+
+3. AllAtOnce: 
+    immediate
+
+Can create Pre & Post Traffic hooks to check the health of the Lambda function
+
+
+PROD Alias -+---(100 - X%)------> V1
+            |        :           
+            |        :  
+            +-------(X%)--------> V2
+                     :
+                     :
+        Make X vary over time until X = 100%
+                     :
+                     :
+                [CodeDeploy]
+
+
+
+
+
+## some extra slides , maybe from DVA courses , add here anyway 
+
+
+==== Lambda Environment Variables ====================
+
+Environment variable 
+    = key / value pair in “String” form
+
+Adjust the function behavior 
+    without updating code
+
+The environment variables are available to your code
+Lambda Service adds its own system environment variables as well
+
+Helpful to store secrets (encrypted by KMS) 
+Secrets can be encrypted by the Lambda service key, or your own KMS Key
+
+
+
+==== Lambda Concurrency and Throttling ========================
+
+Concurrency limit: 
+    up to 1000 concurrent executions
+    * <important> this is a limit at [account level]
+
+Can set a “reserved concurrency” at the function level (=limit)
+
+Each invocation over the concurrency limit will trigger a “Throttle”
+
+
+Lambda Concurrency Issue
+    If you don’t reserve (=limit) concurrency ,
+    
+    so any of your function get too much request
+     => request lots of capabilities
+     => impact all the other functions in your account 
+    
+    
+
+==== Cold Starts & Provisioned Concurrency ==========
+
+Cold Start:
+    when create New instance
+        all code is loaded and code outside the handler run (init)
+    If the init is large 
+        (code, dependencies, SDK...) 
+        this process can take some time. 
+    First request served by new instances has higher latency than the rest
+
+Provisioned Concurrency:
+    Concurrency is allocated before the function is invoked (in advance)
+    So, the cold start never happens, and all invocations have low latency
+    Application Auto Scaling can manage concurrency 
+        (schedule or target utilization)
+        
+==== Reserved and Provisioned Concurrency ===========================
+
+ #  reference
+https://docs.aws.amazon.com/lambda/latest/dg/configuration-concurrency.html
+
+
+
+==== Lambda Integration with ALB ========================================
+
+To expose a Lambda function as an HTTP(S) endpoint...
+
+You can use the  Application Load Balancer 
+    (or an API Gateway)
+
+The Lambda function must be registered in a target group
+
+
+
+
+
+
+

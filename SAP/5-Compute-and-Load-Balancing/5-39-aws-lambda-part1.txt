@@ -1,0 +1,174 @@
+ #  Page 186
+
+==== AWS Lambda Integrations Main ones ===============================
+
+API Gateway 
+Kinesis 
+DynamoDB 
+AWS S3
+CloudWatch Logs , CloudWatch Events 
+AWS SQS , AWS SNS 
+AWS Cognito
+AWS IoT
+
+
+==== Example: Serverless Thumbnail creation =================
+
+[S3]New iamge uploaded 
+    |
+    | trigger
+    |
+    +--> [Lambda] Create a Thumbnail 
+            |
+            | push
+            +-------> [s3] New Thumbnail
+            |
+            | push
+            +-------> [DynamoDB] Metadata in DynamoDB
+                                    such as : iamge name / image size / creation date / etc ...
+
+
+==== Example: Serverless CRON Job =================
+
+                      Trigger  
+[CloudWatch Events] ---------------> [Lambda] Perform a task
+                     Every 1 hour
+
+
+
+==== AWS Lambda Language Support (runtimes) =================
+
+supported Language
+    Node.js (JavaScript) , Python , Java , Ruby
+    C# (.NET Core) , Golang , C# / Powershell 
+    Custom Runtime API (community supported, example Rust)
+
+Lambda Container Image 
+    The container image must implement the Lambda Runtime API
+    ECS / Fargate is preferred for running arbitrary Docker image
+
+
+
+==== Lambda – Limits to know =================
+
+RAM 
+    – 128 MB to 10,240 MB (10 GB)
+
+CPU 
+    – is linked to RAM (cannot be set manually)
+        2 vCPUs are allocated at 1,769 MB of RAM
+        6 vCPUs are allocated at 10,240 MB of RAM
+
+Timeout 
+    – up to 15 minutes
+
+/tmp Storage 
+    – 512 MB (can’t process BIG files)
+
+Deployment Package 
+    – 50 MB (zipped) , 250 MB (unzipped) including Lambda layers 
+
+Concurrent Executions 
+    – 1000 (soft limit that can be increased)
+
+Container Image Size 
+    – 10 GB
+
+Invocation Payload (request/response) 
+    – 6 MB (sync), 256 KB (async)
+
+
+
+
+==== Lambda – Latencies Considerations(approximates) ======================
+
+Lambda Latency:
+    Cold Lambda Invocation: ~100ms 
+    Warm Lambda Invocation: ~ms
+    New feature of “provisioned concurrency” (Dec 2019) to reduce number of cold starts
+API Gateway invocation: 100 ms
+CloudFront invocation: 100 ms
+
+If you chain with other services 
+    (API Gateway, CloudFront, ALB, Lambda, SQS, Step Functions...),
+    add their latencies as well
+
+X-Ray can help visualize the end-to-end latency
+
+
+
+==== Lambda - Security ============================
+
+IAM Roles 
+    for Lambda to grant access to other AWS services
+
+Resource-based Policies for Lambda 
+    (similar to S3 bucket policies):
+    Allow other accounts to invoke or manage Lambda 
+    Allow other services to invoke or manage Lambda
+
+----policy-example----------
+{
+    "sid": "sns",
+    "Effect": "Allow",
+    "Principal": {
+        "Service": "sns.amazonaws.com"
+    },
+    "Action": "lambda:invokeFunction",
+    "Resource": "arm:aws:lambda:us-east-2:123456789012:function:my-function"
+}
+
+ #  this allow sns service to invoke lambda function
+
+
+
+
+==== Lambda in a VPC ========================
+
+<Default Lambda Deployment>
+    public           (OK)
+www <----- [Lambda] ------> DynamoDB
+     work     |
+        (Not working)
+              |     +----VPC & Private subnet----     
+              |     |
+              +--------> Private RDS
+                    |
+
+
+<Lambda in VPC>
+
+ VPC & private Subnet           public subnet
+----------------------+     +---------------------
+[Lambda]              |     |
+Assign SG ------+---------------> Endpoint ------->|
+   |            |     |     |                      |--> DynamoDB
+(working)       +---------------> NAT ---> IGW --->|
+   |                  |     |               |
+   +--> Private RDS   |     |               +---> WWW
+
+
+
+ #  NOTE:
+        CloudWatch logs will work no matter where lambda is deployed
+            even it's deployed into a private VPC
+    
+
+
+==== AWS Lambda Logging, Monitoring and Tracing ========================
+
+CloudWatch:
+    logs 
+        stored in AWS CloudWatch Logs
+    metrics 
+        displayed in AWS CloudWatch Metrics 
+        (successful invocations, error rates, latency, timeouts, etc...)
+    Make sure your [Lambda]
+        has an execution role with an IAM policy 
+        that authorizes writes to CloudWatch Logs
+
+X-Ray:
+    It’s possible to trace Lambda with X-Ray
+    Enable in Lambda configuration (runs the X-Ray daemon for you)
+    Use AWS SDK in Code
+    Ensure Lambda Function has correct IAM Execution Role

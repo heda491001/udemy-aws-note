@@ -4,16 +4,22 @@ Page 169
 ==== Auto Scaling – Updating an application ====================================
 
 [diagram]
+
                             ASG
                         ------------------
 Client <----> ALB <---->  EC2 Instances
 
                             using a Launch Template
 
+# so this is base, next we will update the EC2 instances
+
 
 ==== Auto Scaling – Updating an application ====================================
 
 (1)
+
+ #  a simple example that can keep the same ASG
+    and no impact to the Client
 
 ASG   (V1 and V2 in same target group)
  |      
@@ -22,15 +28,53 @@ ASG   (V1 and V2 in same target group)
  +---> [EC2 instances Launch Template V2] ----->|
 
 
-(2)
+1. change the ASG setting , to use the new Launch Template V2
+    * but the instances will not updadte for this yet
 
-Split traffic betwenen TG
+2. we can update the ASG setting , (for example )double the capabilities
+    then ASG will create new instances using [Template V2]
+
+3. if V2 working fine , we can terminate the instances using V1, and change back the capabilities
+
+# but in this case , at step 2 ,
+    traffics will spread across all instances using V1 and V2
+
+(2) 
+ #  Split traffic between ASG
 
 ASG 1 [EC2 instances Launch Template V1] ----->|
                                                |---> ALB --->
 ASG 2 [EC2 instances Launch Template V2] ----->|
 
+ #  kind of a advanced version of (1)
+
+
+ -  create a new ASG 2
+        using Template V2
+        add to the ALB we are using now
+    change ALB setting 
+        spread traffic to ASG1 and ASG2 at a rate we set
+            for example, 20%
+
+ -  if V2 working fine , 
+        change the ALB , forward 100% of traffic to ASG2 
+        remove the ASG1 and terminate instances in it 
+
+
+ #  so this much more easier to achive a carnay deployment
+    
+    by the way 
+    why it's called "carnay" deployment ?
+        カナリアは一酸化炭素など無臭・無刺激の有毒ガスに対して人間より敏感に反応するため、
+        かつては炭鉱内でいち早くガス漏れに気付くことができるよう鳥かごに入れて連れて行った。
+        初期に最新版を使用する利用者をこの「炭鉱のカナリア」になぞらえた表現である。
+
+
+
 (3)
+ #  spread traffic between ALBs
+
+
         DNS Query
 Client -----------> Rout53 (CNAME Weighted record)
     |
@@ -45,28 +89,44 @@ Test                |  Separate manual testing Load testing
 Client -------------+
 
 
+ #  so this is another advanced version of (2)
 
-========================================
+ -  create a new ASG2 (like what we do in (2) )
+        using Template V2
+    create a new ALB2 
+        set ALB's target group to ASG2
+    change the Rout53 setting 
+        setup a CNAME Weighted record
+        so the traffics will spread between 2 ALB
 
-========================================
+ -  you Separate some manual test on Template V2 
+        using ALB2's hostname
 
-========================================
+ -  if everything is working fine with V2
+        change the Rout53 DNS setting 
+            all traffic to ALB2
+        remove ALB1 
+        remove ASG1
 
-========================================
+ #  compare with (2)
+    merit
+        you can have a some Separate test on the new version 
+    demerit 
+        more resources
+        DNS have cache(TTL) on Client side 
+            so after you change the Rout53 setting it take sometime 
+    
 
-========================================
+==== finally ==============
 
-========================================
+these are just some example's
+point is 
+    we have several way to achive the same final goal
+    but every way will working fine , but it has some own feature
 
-========================================
+    the SAP-exam will have this kind of question 
+        every selection will working fine 
+        but we need to choose the best/suitable way 
 
-========================================
 
-========================================
-
-========================================
-
-========================================
-
-========================================
 
