@@ -1,3 +1,68 @@
  #  Page 209
 
- 
+====Types of load balancer on AWS=====================
+
+AWS has 4 kinds of managed Load Balancers
+
+1. CLB - Classic Load Balancer 
+    v1 - old generation - 2009 
+    Support 
+        HTTP,  HTTPS, TCP, SSL (secure TCP)
+
+2. ALB - Application Load Balancer 
+    v2 - new generation – 2016
+    Support 
+        HTTP,  HTTPS, WebSocket
+
+3. NLB - Network Load Balancer 
+    v2 - new generation – 2017 
+    Support
+        TCP,  TLS (secure TCP), UDP
+
+4. GWLB - Gateway Load Balancer 
+    (newest) 2020 
+    Operates at layer 3 (Network layer) – IP Protocol
+
+Overall, 
+    it is recommended to use the newer generation 
+    as they provide more features
+
+Some LB can be setup as internal (private) or external (public) ELBs
+
+
+
+====CLB=====================
+
+Health Checks can be HTTP (L7) or TCP (L4) based including with SSL
+
+Supports only one SSL certificate
+  - The SSL certificate can have many SAN (Subject Alternate Name), 
+    but the SSL certificate must be changed anytime a SAN is added / edited / removed
+
+  - Better to use ALB with SNI (Server Name Indication) if possible 
+
+  - Can use multiple CLB if you want distinct SSL certificates
+
+TCP => TCP passes all the traffic to the EC2 instance
+    Only way to use 2-way SSL authentication
+
+
+
+====ALB======================================
+
+Application load balancers is Layer 7 (HTTP)
+
+Load balancing to 
+    - multiple HTTP applications across machines (target groups)
+    - multiple applications on the same machine 
+        ex: containers
+        great fit with ECS, has dynamic port mapping
+
+Support 
+    HTTP/2 and WebSocket
+    redirects 
+        (from HTTP to HTTPS at ALB level for example)
+
+Routing Rules for path, headers, query string
+
+
